@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
+import type L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 // Story data type definitions
 interface StatItem {
@@ -270,115 +273,199 @@ const stories: Record<string, Story> = {
   }
 };
 
-// Korea Location Map using real Google Maps screenshot
+// Dynamic import for Leaflet components (no SSR)
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  { ssr: false }
+);
+const Popup = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Popup),
+  { ssr: false }
+);
+const Circle = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Circle),
+  { ssr: false }
+);
+const Polyline = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Polyline),
+  { ssr: false }
+);
+
+// Custom marker icon (fixes default Leaflet icon issue in Next.js)
+function useLeafletIcon() {
+  const [icon, setIcon] = useState<L.Icon | null>(null);
+  
+  useEffect(() => {
+    import("leaflet").then((L) => {
+      const customIcon = new L.Icon({
+        iconUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff3366'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E",
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -12],
+      });
+      setIcon(customIcon);
+    });
+  }, []);
+  
+  return icon;
+}
+
+// Korea Location Map using Leaflet
 function KoreaLocationMap() {
+  const [mounted, setMounted] = useState(false);
+  const icon = useLeafletIcon();
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return <div className="leaflet-loading">Loading map...</div>;
+  }
+  
+  // Coupang HQ coordinates (Songpa District, Seoul)
+  const coupangHQ: [number, number] = [37.5045, 127.0245];
+  
   return (
-    <div className="map-image-container">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img 
-        src="/stuxnet-story/korea-map.png" 
-        alt="Map of South Korea" 
-        className="map-image"
-      />
-      {/* Overlay with animated markers */}
-      <svg className="map-overlay" viewBox="0 0 580 280" preserveAspectRatio="xMidYMid meet">
-        {/* Seoul marker - positioned over Seoul on the map (approx 278, 75) */}
-        <circle className="location-pulse-img" cx="278" cy="75" r="15">
-          <animate attributeName="r" values="15;26;15" dur="2s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="278" cy="75" r="8" fill="var(--accent2)" filter="url(#glow)"/>
-        
-        {/* Coupang HQ label */}
-        <rect x="292" y="62" width="95" height="28" rx="6" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="2"/>
-        <text x="339" y="81" fill="white" fontSize="11" textAnchor="middle" fontWeight="700">Coupang HQ</text>
-        
-        {/* Glow filter */}
-        <defs>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
+    <div className="leaflet-container-wrapper">
+      <MapContainer
+        center={coupangHQ}
+        zoom={12}
+        className="leaflet-map"
+        zoomControl={false}
+        attributionControl={false}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+        {icon && (
+          <Marker position={coupangHQ} icon={icon}>
+            <Popup className="custom-popup">
+              <div className="popup-content">
+                <strong>🏢 Coupang HQ</strong>
+                <br />
+                <span>Songpa District, Seoul</span>
+                <br />
+                <small>Ground zero of the breach</small>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+        <Circle
+          center={coupangHQ}
+          radius={2000}
+          pathOptions={{
+            color: "#ff3366",
+            fillColor: "#ff3366",
+            fillOpacity: 0.15,
+            weight: 2,
+          }}
+        />
+      </MapContainer>
+      <div className="map-label">
+        <span className="map-label-icon">📍</span>
+        <span>Coupang HQ • Seoul, South Korea</span>
+      </div>
     </div>
   );
 }
 
-// Korea to China Flight Map using real Google Maps screenshot
+// Korea to China Flight Map using Leaflet
 function KoreaChinaFlightMap() {
+  const [mounted, setMounted] = useState(false);
+  const [iconOrigin, setIconOrigin] = useState<L.Icon | null>(null);
+  const [iconDest, setIconDest] = useState<L.Icon | null>(null);
+  
+  useEffect(() => {
+    setMounted(true);
+    import("leaflet").then((L) => {
+      setIconOrigin(new L.Icon({
+        iconUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E",
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, -10],
+      }));
+      setIconDest(new L.Icon({
+        iconUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff3366'%3E%3Ccircle cx='12' cy='12' r='10' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E",
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
+        popupAnchor: [0, -10],
+      }));
+    });
+  }, []);
+  
+  if (!mounted) {
+    return <div className="leaflet-loading">Loading map...</div>;
+  }
+  
+  // Coordinates
+  const seoul: [number, number] = [37.5665, 126.9780];
+  const qingdao: [number, number] = [36.0671, 120.3826]; // Possible destination
+  const flightPath: [number, number][] = [
+    seoul,
+    [37.2, 124.5], // Over Yellow Sea
+    [36.5, 122.5], // Curve point
+    qingdao
+  ];
+  
   return (
-    <div className="map-image-container">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img 
-        src="/stuxnet-story/korea-china-map.png" 
-        alt="Map of Korea and China" 
-        className="map-image"
-      />
-      {/* Overlay with animated flight path */}
-      <svg className="map-overlay" viewBox="0 0 580 280" preserveAspectRatio="xMidYMid meet">
-        {/* Glow filter */}
-        <defs>
-          <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        
-        {/* Seoul marker - positioned over South Korea on the map (approx 408, 75) */}
-        <circle className="location-pulse-img" cx="408" cy="75" r="12">
-          <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="408" cy="75" r="7" fill="var(--accent)" filter="url(#glow2)"/>
-        <text x="426" y="70" fill="white" fontSize="11" fontWeight="700" filter="url(#glow2)">Seoul</text>
-        
-        {/* Destination in China - Qingdao area (approx 0, 85) */}
-        <circle cx="5" cy="85" r="7" fill="var(--accent2)" filter="url(#glow2)"/>
-        <rect x="15" y="95" width="80" height="28" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
-        <text x="55" y="106" fill="var(--text-dim)" fontSize="8" textAnchor="middle">Destination</text>
-        <text x="55" y="117" fill="white" fontSize="9" textAnchor="middle" fontWeight="600">Unknown</text>
-        
-        {/* Animated flight path - curved arc from Seoul to China */}
-        <path 
-          d="M 408 75 Q 300 30 180 60 Q 90 75 5 85"
-          fill="none"
-          stroke="var(--accent2)"
-          strokeWidth="4"
-          strokeDasharray="500"
-          strokeDashoffset="500"
-          filter="url(#glow2)"
-        >
-          <animate 
-            attributeName="stroke-dashoffset" 
-            from="500" 
-            to="0" 
-            dur="2.5s" 
-            fill="freeze"
-            begin="0.3s"
-          />
-        </path>
-        
-        {/* Animated plane/arrow along the path */}
-        <circle r="6" fill="var(--accent2)" filter="url(#glow2)">
-          <animateMotion 
-            dur="2.5s" 
-            begin="0.3s"
-            fill="freeze"
-            path="M 408 75 Q 300 30 180 60 Q 90 75 5 85"
-          />
-        </circle>
-        
-        {/* Distance label */}
-        <rect x="195" y="15" width="75" height="24" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
-        <text x="232" y="31" fill="var(--accent2)" fontSize="11" textAnchor="middle" fontWeight="700">~800 km</text>
-      </svg>
+    <div className="leaflet-container-wrapper">
+      <MapContainer
+        center={[36.5, 123]}
+        zoom={5}
+        className="leaflet-map"
+        zoomControl={false}
+        attributionControl={false}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+        {iconOrigin && (
+          <Marker position={seoul} icon={iconOrigin}>
+            <Popup className="custom-popup">
+              <div className="popup-content">
+                <strong>✈️ Seoul</strong>
+                <br />
+                <span>Point of departure</span>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+        {iconDest && (
+          <Marker position={qingdao} icon={iconDest}>
+            <Popup className="custom-popup">
+              <div className="popup-content">
+                <strong>❓ Destination Unknown</strong>
+                <br />
+                <span>Somewhere in China</span>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+        <Polyline
+          positions={flightPath}
+          pathOptions={{
+            color: "#ff3366",
+            weight: 3,
+            opacity: 0.8,
+            dashArray: "10, 5",
+          }}
+        />
+      </MapContainer>
+      <div className="map-label flight">
+        <span className="map-label-icon">✈️</span>
+        <span>Seoul → China • ~550 km</span>
+      </div>
     </div>
   );
 }
