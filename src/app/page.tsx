@@ -198,37 +198,67 @@ function MobileAttackStage({ stage }: { stage: number }) {
   );
 }
 
-// Desktop Attack Stage - Network diagram with packet animation
+// Desktop Attack Stage - Enhanced network diagram with electric pulses and ripples
 function DesktopAttackStage({ stage }: { stage: number }) {
   const [packetProgress, setPacketProgress] = useState(0);
+  const [showRipple, setShowRipple] = useState(false);
+  const [trailPositions, setTrailPositions] = useState<{x: number, y: number, age: number}[]>([]);
   const prevStageRef = useRef(stage);
   
   useEffect(() => {
     if (prevStageRef.current !== stage) {
       setPacketProgress(0);
+      setShowRipple(false);
+      setTrailPositions([]);
       prevStageRef.current = stage;
     }
+    
     const interval = setInterval(() => {
-      setPacketProgress(p => Math.min(1, p + 0.015));
-    }, 30);
+      setPacketProgress(p => {
+        const newP = Math.min(1, p + 0.012);
+        // Trigger ripple when packet arrives
+        if (newP >= 0.95 && p < 0.95) {
+          setShowRipple(true);
+        }
+        return newP;
+      });
+    }, 25);
     return () => clearInterval(interval);
   }, [stage]);
   
+  // Trail effect
+  useEffect(() => {
+    const trailInterval = setInterval(() => {
+      setTrailPositions(prev => {
+        const aged = prev.map(p => ({ ...p, age: p.age + 1 })).filter(p => p.age < 8);
+        if (packetProgress < 0.98) {
+          const fromNode = nodes[stageInfo[stage]?.from || 0];
+          const toNode = nodes[stageInfo[stage]?.to || 1];
+          const x = fromNode.x + (toNode.x - fromNode.x) * packetProgress;
+          const y = fromNode.y + (toNode.y - fromNode.y) * packetProgress;
+          return [...aged, { x, y, age: 0 }];
+        }
+        return aged;
+      });
+    }, 50);
+    return () => clearInterval(trailInterval);
+  }, [packetProgress, stage]);
+  
   const nodes = [
-    { id: 'usb', label: 'USB Drive', x: 6, y: 70, icon: '💾' },
-    { id: 'laptop', label: 'Engineer PC', x: 23, y: 30, icon: '💻' },
-    { id: 'network', label: 'Air-Gapped', x: 41, y: 70, icon: '🌐' },
-    { id: 'scada', label: 'SCADA', x: 59, y: 30, icon: '🖥️' },
-    { id: 'plc', label: 'PLC', x: 77, y: 70, icon: '⚙️' },
-    { id: 'centrifuge', label: 'Centrifuges', x: 94, y: 30, icon: '☢️' },
+    { id: 'usb', label: 'USB', x: 8, y: 65, icon: '💾' },
+    { id: 'laptop', label: 'PC', x: 26, y: 35, icon: '💻' },
+    { id: 'network', label: 'NETWORK', x: 44, y: 65, icon: '🌐' },
+    { id: 'scada', label: 'SCADA', x: 62, y: 35, icon: '🖥️' },
+    { id: 'plc', label: 'PLC', x: 80, y: 65, icon: '⚙️' },
+    { id: 'centrifuge', label: 'TARGET', x: 94, y: 35, icon: '☢️' },
   ];
   
   const stageInfo = [
     { title: "USB INSERTION", desc: "Infected USB planted by contractor", from: 0, to: 1 },
     { title: "INITIAL INFECTION", desc: "Worm exploits Windows zero-days", from: 1, to: 2 },
-    { title: "NETWORK SPREAD", desc: "Propagates through shared drives", from: 2, to: 3 },
+    { title: "NETWORK SPREAD", desc: "Propagates via shared drives", from: 2, to: 3 },
     { title: "SCADA COMPROMISE", desc: "Targets WinCC/Step 7 software", from: 3, to: 4 },
-    { title: "PAYLOAD DELIVERY", desc: "Injects malicious code into PLCs", from: 4, to: 5 },
+    { title: "PAYLOAD DELIVERY", desc: "Malicious code injected into PLCs", from: 4, to: 5 },
   ];
   
   const currentStage = stageInfo[stage] || stageInfo[0];
@@ -239,58 +269,169 @@ function DesktopAttackStage({ stage }: { stage: number }) {
   const packetY = fromNode.y + (toNode.y - fromNode.y) * packetProgress;
   
   return (
-    <div className="attack-flow">
-      <div className="attack-header">
-        <span className="attack-stage-num">STAGE {stage + 1}/5</span>
-        <h3 className="attack-stage-title">{currentStage.title}</h3>
-        <p className="attack-stage-desc">{currentStage.desc}</p>
+    <div className="attack-flow-v2">
+      <div className="attack-header-v2">
+        <div className="stage-badge">
+          <span className="stage-num">0{stage + 1}</span>
+          <span className="stage-divider">/</span>
+          <span className="stage-total">05</span>
+        </div>
+        <h3 className="stage-title-v2">{currentStage.title}</h3>
+        <p className="stage-desc-v2">{currentStage.desc}</p>
       </div>
       
-      <div className="attack-diagram">
-        <svg className="attack-paths" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <div className="attack-diagram-v2">
+        {/* SVG for paths and effects */}
+        <svg className="attack-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            {/* Glow filter for active paths */}
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            {/* Electric pulse gradient */}
+            <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="transparent"/>
+              <stop offset="40%" stopColor="#ff3366"/>
+              <stop offset="50%" stopColor="#ffffff"/>
+              <stop offset="60%" stopColor="#ff3366"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </linearGradient>
+          </defs>
+          
+          {/* Background grid lines for cyber effect */}
+          <g className="cyber-grid" opacity="0.1">
+            {[20, 40, 60, 80].map(y => (
+              <line key={`h${y}`} x1="0" y1={y} x2="100" y2={y} stroke="#00f0ff" strokeWidth="0.2"/>
+            ))}
+            {[20, 40, 60, 80].map(x => (
+              <line key={`v${x}`} x1={x} y1="0" x2={x} y2="100" stroke="#00f0ff" strokeWidth="0.2"/>
+            ))}
+          </g>
+          
+          {/* Connection paths */}
           {nodes.slice(0, -1).map((node, i) => {
             const next = nodes[i + 1];
-            const isActive = i <= stage;
+            const isActive = i < stage;
             const isCurrent = i === stage;
+            const isPending = i > stage;
             return (
-              <line
-                key={i}
-                x1={node.x}
-                y1={node.y}
-                x2={next.x}
-                y2={next.y}
-                className={`attack-path-line ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''}`}
-              />
+              <g key={i}>
+                {/* Base path */}
+                <line
+                  x1={node.x} y1={node.y}
+                  x2={next.x} y2={next.y}
+                  className={`path-base ${isActive ? 'completed' : ''} ${isCurrent ? 'active' : ''} ${isPending ? 'pending' : ''}`}
+                />
+                {/* Animated dashes for active path */}
+                {isCurrent && (
+                  <line
+                    x1={node.x} y1={node.y}
+                    x2={next.x} y2={next.y}
+                    className="path-electric"
+                    filter="url(#glow)"
+                  />
+                )}
+                {/* Data flow particles on completed paths */}
+                {isActive && (
+                  <circle r="0.8" className="data-particle">
+                    <animateMotion
+                      dur="2s"
+                      repeatCount="indefinite"
+                      path={`M${node.x},${node.y} L${next.x},${next.y}`}
+                    />
+                  </circle>
+                )}
+              </g>
             );
           })}
         </svg>
         
-        <div
-          className="attack-packet"
-          style={{
-            left: `${packetX}%`,
-            top: `${packetY}%`,
-          }}
-        />
+        {/* Trail particles */}
+        {trailPositions.map((pos, i) => (
+          <div
+            key={i}
+            className="packet-trail"
+            style={{
+              left: `${pos.x}%`,
+              top: `${pos.y}%`,
+              opacity: 1 - (pos.age / 8),
+              transform: `translate(-50%, -50%) scale(${1 - (pos.age / 10)})`,
+            }}
+          />
+        ))}
         
+        {/* Main packet */}
+        {packetProgress < 0.98 && (
+          <div
+            className="attack-packet-v2"
+            style={{
+              left: `${packetX}%`,
+              top: `${packetY}%`,
+            }}
+          >
+            <div className="packet-core" />
+            <div className="packet-ring packet-ring-1" />
+            <div className="packet-ring packet-ring-2" />
+            <div className="packet-glow" />
+          </div>
+        )}
+        
+        {/* Nodes */}
         {nodes.map((node, i) => {
           const isInfected = i <= stage;
           const isTarget = i === stage + 1;
           const isSource = i === stage;
+          const isCurrentTarget = i === stage + 1 && showRipple;
           return (
             <div
               key={node.id}
-              className={`attack-node ${isInfected ? 'infected' : ''} ${isTarget ? 'target' : ''} ${isSource ? 'source' : ''}`}
+              className={`node-v2 ${isInfected ? 'infected' : ''} ${isTarget ? 'target' : ''} ${isSource ? 'source' : ''}`}
               style={{
                 left: `${node.x}%`,
                 top: `${node.y}%`,
               }}
             >
-              <span className="attack-node-icon">{node.icon}</span>
-              <span className="attack-node-label">{node.label}</span>
+              {/* Ripple effect on infection */}
+              {isCurrentTarget && (
+                <>
+                  <div className="infection-ripple ripple-1" />
+                  <div className="infection-ripple ripple-2" />
+                  <div className="infection-ripple ripple-3" />
+                </>
+              )}
+              {/* Scanning effect on target */}
+              {isTarget && !isCurrentTarget && (
+                <div className="scan-ring" />
+              )}
+              {/* Pulse rings for infected nodes */}
+              {isInfected && (
+                <div className="infected-pulse" />
+              )}
+              {/* Node content */}
+              <div className="node-icon-wrap">
+                <span className="node-icon-v2">{node.icon}</span>
+              </div>
+              <span className="node-label-v2">{node.label}</span>
+              {/* Status indicator */}
+              <div className={`node-status ${isInfected ? 'compromised' : isTarget ? 'vulnerable' : 'secure'}`}>
+                {isInfected ? '⚠ COMPROMISED' : isTarget ? '◉ TARGETING' : '○ SECURE'}
+              </div>
             </div>
           );
         })}
+      </div>
+      
+      {/* Progress bar */}
+      <div className="attack-progress-bar">
+        {stageInfo.map((_, i) => (
+          <div key={i} className={`progress-segment ${i < stage ? 'complete' : ''} ${i === stage ? 'active' : ''}`}>
+            <div className="segment-fill" style={{ width: i === stage ? `${packetProgress * 100}%` : i < stage ? '100%' : '0%' }} />
+          </div>
+        ))}
       </div>
     </div>
   );
