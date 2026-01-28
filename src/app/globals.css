@@ -752,9 +752,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(8px, 2vmin, 14px);
-  padding: clamp(16px, 4vmin, 28px) clamp(24px, 6vmin, 40px);
-  border-radius: clamp(12px, 3vmin, 20px);
+  gap: clamp(4px, 1vmin, 8px);
+  padding: clamp(10px, 2.5vmin, 18px) clamp(16px, 4vmin, 28px);
+  border-radius: clamp(10px, 2vmin, 16px);
   transition: all 0.3s ease;
 }
 
@@ -777,7 +777,7 @@ body {
 }
 
 .mv2-icon {
-  font-size: clamp(36px, 10vmin, 56px);
+  font-size: clamp(28px, 7vmin, 44px);
 }
 
 .mv2-source .mv2-icon {
@@ -813,7 +813,7 @@ body {
 .mv2-connection {
   position: relative;
   width: 3px;
-  height: clamp(50px, 12vmin, 80px);
+  height: clamp(30px, 8vmin, 50px);
   display: flex;
   align-items: center;
   justify-content: center;
