@@ -703,9 +703,363 @@ body {
 }
 
 /* ===========================================
-   MOBILE ATTACK FLOW (9:16) - Card-based design
-   All sizes relative for scaling
+   MOBILE ATTACK FLOW V2 (9:16) - Enhanced design
    =========================================== */
+.mobile-attack-v2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: clamp(10px, 3vmin, 20px);
+  text-align: center;
+  overflow: hidden;
+}
+
+.mobile-header-v2 {
+  flex-shrink: 0;
+  margin-bottom: clamp(8px, 2vmin, 16px);
+}
+
+.mobile-stage-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: clamp(2px, 0.5vmin, 4px);
+  font-family: 'Courier New', monospace;
+  margin-bottom: clamp(4px, 1vmin, 8px);
+}
+
+.mobile-stage-num-v2 {
+  font-size: clamp(24px, 7vmin, 48px);
+  font-weight: 900;
+  color: var(--accent2);
+  text-shadow: 0 0 20px var(--accent2), 0 0 40px var(--accent2);
+}
+
+.mobile-stage-divider {
+  font-size: clamp(16px, 4vmin, 28px);
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.mobile-stage-total {
+  font-size: clamp(16px, 4vmin, 28px);
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.mobile-title-v2 {
+  font-size: clamp(14px, 4vmin, 28px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: clamp(1px, 0.4vmin, 4px);
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Infected chain showing previous nodes */
+.mobile-infected-chain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1vmin, 8px);
+  padding: clamp(6px, 1.5vmin, 12px) clamp(12px, 3vmin, 20px);
+  background: rgba(255, 51, 102, 0.1);
+  border: 1px solid rgba(255, 51, 102, 0.3);
+  border-radius: clamp(20px, 5vmin, 40px);
+  margin-bottom: clamp(8px, 2vmin, 16px);
+  flex-shrink: 0;
+}
+
+.chain-node {
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 1vmin, 8px);
+}
+
+.chain-icon {
+  font-size: clamp(14px, 3.5vmin, 24px);
+  filter: drop-shadow(0 0 4px var(--accent2));
+}
+
+.chain-connector {
+  color: var(--accent2);
+  font-size: clamp(10px, 2.5vmin, 16px);
+  opacity: 0.7;
+}
+
+/* Main attack visual */
+.mobile-attack-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vmin, 16px);
+  min-height: 0;
+}
+
+.mobile-node-v2 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.5vmin, 12px);
+}
+
+.node-glow {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.source-glow {
+  background: radial-gradient(circle, rgba(255, 51, 102, 0.3) 0%, transparent 70%);
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.target-glow {
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  animation: glowPulse 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+.node-ring {
+  position: absolute;
+  width: 120%;
+  height: 120%;
+  border: 2px solid var(--accent2);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ringExpand 2s ease-out infinite;
+}
+
+@keyframes ringExpand {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.node-inner {
+  position: relative;
+  z-index: 2;
+  padding: clamp(12px, 4vmin, 24px);
+  background: rgba(255, 51, 102, 0.15);
+  border: 2px solid var(--accent2);
+  border-radius: clamp(12px, 3vmin, 20px);
+  box-shadow: 0 0 30px rgba(255, 51, 102, 0.4), inset 0 0 20px rgba(255, 51, 102, 0.1);
+}
+
+.target-inner {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3), inset 0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+.node-emoji {
+  font-size: clamp(32px, 10vmin, 56px);
+  display: block;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.mobile-node-v2.source .node-emoji {
+  animation: sourceFloat 2s ease-in-out infinite;
+}
+
+@keyframes sourceFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.05); }
+}
+
+.node-name {
+  font-size: clamp(11px, 3vmin, 18px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: clamp(1px, 0.3vmin, 2px);
+  color: var(--text);
+  position: relative;
+  z-index: 2;
+}
+
+.mobile-node-v2.source .node-name {
+  color: var(--accent2);
+}
+
+.mobile-node-v2.target .node-name {
+  color: var(--accent);
+}
+
+.node-badge {
+  font-size: clamp(7px, 1.8vmin, 11px);
+  font-weight: 600;
+  padding: clamp(2px, 0.5vmin, 4px) clamp(8px, 2vmin, 12px);
+  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.node-badge.infected {
+  color: var(--accent2);
+  background: rgba(255, 51, 102, 0.2);
+  border: 1px solid rgba(255, 51, 102, 0.4);
+}
+
+.node-badge.targeting {
+  color: var(--accent);
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  animation: badgeBlink 1s ease-in-out infinite;
+}
+
+@keyframes badgeBlink {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Scanning effect on target */
+.scan-effect {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: scanSpin 1.5s linear infinite;
+  z-index: 1;
+}
+
+@keyframes scanSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Data stream between nodes */
+.mobile-data-stream {
+  position: relative;
+  width: clamp(4px, 1vmin, 6px);
+  height: clamp(60px, 18vmin, 100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stream-line {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--accent2), var(--accent));
+  border-radius: 4px;
+  opacity: 0.4;
+}
+
+.stream-glow {
+  position: absolute;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(255, 51, 102, 0.3), 
+    rgba(168, 85, 247, 0.2),
+    rgba(0, 240, 255, 0.3)
+  );
+  filter: blur(8px);
+  border-radius: 4px;
+}
+
+.data-packet {
+  position: absolute;
+  width: clamp(8px, 2vmin, 12px);
+  height: clamp(8px, 2vmin, 12px);
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent2), 0 0 20px var(--accent2);
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+.packet-1 { animation: packetGlow 0.5s ease-in-out infinite; }
+.packet-2 { animation: packetGlow 0.5s ease-in-out infinite 0.15s; opacity: 0.7; }
+.packet-3 { animation: packetGlow 0.5s ease-in-out infinite 0.3s; opacity: 0.4; }
+
+@keyframes packetGlow {
+  0%, 100% { box-shadow: 0 0 5px var(--accent2), 0 0 10px var(--accent2); }
+  50% { box-shadow: 0 0 15px var(--accent2), 0 0 30px var(--accent2); }
+}
+
+.stream-arrow {
+  position: absolute;
+  bottom: -8px;
+  color: var(--accent);
+  font-size: clamp(12px, 3vmin, 18px);
+  text-shadow: 0 0 10px var(--accent);
+  animation: arrowPulse 1s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(3px); opacity: 1; }
+}
+
+/* Description */
+.mobile-desc-v2 {
+  font-size: clamp(10px, 2.5vmin, 16px);
+  color: var(--text-dim);
+  max-width: 90%;
+  line-height: 1.4;
+  margin-top: clamp(8px, 2vmin, 16px);
+  flex-shrink: 0;
+}
+
+/* Progress indicator */
+.mobile-progress-v2 {
+  display: flex;
+  gap: clamp(6px, 1.5vmin, 10px);
+  margin-top: clamp(10px, 2.5vmin, 18px);
+  flex-shrink: 0;
+}
+
+.progress-step {
+  width: clamp(30px, 8vmin, 50px);
+  height: clamp(4px, 1vmin, 6px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.step-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-step.complete .step-fill {
+  width: 100%;
+  background: var(--accent2);
+}
+
+.progress-step.active .step-fill {
+  width: 100%;
+  animation: progressPulse 1s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; box-shadow: 0 0 10px var(--accent2); }
+}
+
+/* Legacy mobile styles for backwards compatibility */
 .mobile-attack {
   display: flex;
   flex-direction: column;

@@ -150,48 +150,108 @@ const story: Story = {
   ]
 };
 
-// Mobile Attack Stage - Card-based vertical flow
+// Mobile Attack Stage V2 - Enhanced vertical flow with animations
 function MobileAttackStage({ stage }: { stage: number }) {
-  const stages = [
-    { icon: '💾', from: 'USB Drive', to: '💻', toLabel: 'Engineer PC', title: 'USB INSERTION', desc: 'Infected USB planted by contractor' },
-    { icon: '💻', from: 'Engineer PC', to: '🌐', toLabel: 'Air-Gapped Network', title: 'INITIAL INFECTION', desc: 'Worm exploits Windows zero-days' },
-    { icon: '🌐', from: 'Network', to: '🖥️', toLabel: 'SCADA System', title: 'NETWORK SPREAD', desc: 'Propagates through shared drives' },
-    { icon: '🖥️', from: 'SCADA', to: '⚙️', toLabel: 'Siemens PLC', title: 'SCADA COMPROMISE', desc: 'Targets WinCC/Step 7 software' },
-    { icon: '⚙️', from: 'PLC', to: '☢️', toLabel: 'Centrifuges', title: 'PAYLOAD DELIVERY', desc: 'Injects malicious code into PLCs' },
+  const [dataProgress, setDataProgress] = useState(0);
+  
+  useEffect(() => {
+    setDataProgress(0);
+    const interval = setInterval(() => {
+      setDataProgress(p => (p + 0.02) % 1);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [stage]);
+  
+  const allNodes = [
+    { icon: '💾', label: 'USB' },
+    { icon: '💻', label: 'PC' },
+    { icon: '🌐', label: 'NETWORK' },
+    { icon: '🖥️', label: 'SCADA' },
+    { icon: '⚙️', label: 'PLC' },
+    { icon: '☢️', label: 'TARGET' },
   ];
   
-  const current = stages[stage];
+  const stageInfo = [
+    { title: 'USB INSERTION', desc: 'Infected USB planted by contractor' },
+    { title: 'INITIAL INFECTION', desc: 'Worm exploits Windows zero-days' },
+    { title: 'NETWORK SPREAD', desc: 'Propagates through shared drives' },
+    { title: 'SCADA COMPROMISE', desc: 'Targets WinCC/Step 7 software' },
+    { title: 'PAYLOAD DELIVERY', desc: 'Malicious code injected into PLCs' },
+  ];
+  
+  const current = stageInfo[stage];
+  const sourceNode = allNodes[stage];
+  const targetNode = allNodes[stage + 1];
   
   return (
-    <div className="mobile-attack">
-      <div className="mobile-attack-header">
-        <span className="mobile-stage-num">STAGE {stage + 1}/5</span>
-        <h3 className="mobile-stage-title">{current.title}</h3>
+    <div className="mobile-attack-v2">
+      {/* Header */}
+      <div className="mobile-header-v2">
+        <div className="mobile-stage-badge">
+          <span className="mobile-stage-num-v2">0{stage + 1}</span>
+          <span className="mobile-stage-divider">/</span>
+          <span className="mobile-stage-total">05</span>
+        </div>
+        <h3 className="mobile-title-v2">{current.title}</h3>
       </div>
       
-      <div className="mobile-attack-visual">
-        <div className="mobile-node source">
-          <span className="mobile-node-icon">{current.icon}</span>
-          <span className="mobile-node-label">{current.from}</span>
+      {/* Infected chain - show previously infected nodes */}
+      {stage > 0 && (
+        <div className="mobile-infected-chain">
+          {allNodes.slice(0, stage).map((node, i) => (
+            <div key={i} className="chain-node">
+              <span className="chain-icon">{node.icon}</span>
+              {i < stage - 1 && <span className="chain-connector">→</span>}
+            </div>
+          ))}
+        </div>
+      )}
+      
+      {/* Main attack visual */}
+      <div className="mobile-attack-center">
+        {/* Source node */}
+        <div className="mobile-node-v2 source">
+          <div className="node-glow source-glow" />
+          <div className="node-ring" />
+          <div className="node-inner">
+            <span className="node-emoji">{sourceNode.icon}</span>
+          </div>
+          <span className="node-name">{sourceNode.label}</span>
+          <span className="node-badge infected">⚠ INFECTED</span>
         </div>
         
-        <div className="mobile-arrow">
-          <div className="mobile-arrow-line" />
-          <div className="mobile-arrow-pulse" />
-          <span className="mobile-arrow-icon">▼</span>
+        {/* Data stream */}
+        <div className="mobile-data-stream">
+          <div className="stream-line" />
+          <div className="stream-glow" />
+          {/* Multiple data packets */}
+          <div className="data-packet packet-1" style={{ top: `${dataProgress * 100}%` }} />
+          <div className="data-packet packet-2" style={{ top: `${((dataProgress + 0.3) % 1) * 100}%` }} />
+          <div className="data-packet packet-3" style={{ top: `${((dataProgress + 0.6) % 1) * 100}%` }} />
+          <div className="stream-arrow">▼</div>
         </div>
         
-        <div className="mobile-node target">
-          <span className="mobile-node-icon">{current.to}</span>
-          <span className="mobile-node-label">{current.toLabel}</span>
+        {/* Target node */}
+        <div className="mobile-node-v2 target">
+          <div className="node-glow target-glow" />
+          <div className="scan-effect" />
+          <div className="node-inner target-inner">
+            <span className="node-emoji">{targetNode.icon}</span>
+          </div>
+          <span className="node-name">{targetNode.label}</span>
+          <span className="node-badge targeting">◉ TARGETING</span>
         </div>
       </div>
       
-      <p className="mobile-stage-desc">{current.desc}</p>
+      {/* Description */}
+      <p className="mobile-desc-v2">{current.desc}</p>
       
-      <div className="mobile-progress">
-        {stages.map((_, i) => (
-          <div key={i} className={`mobile-progress-dot ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} />
+      {/* Progress indicator */}
+      <div className="mobile-progress-v2">
+        {stageInfo.map((_, i) => (
+          <div key={i} className={`progress-step ${i < stage ? 'complete' : ''} ${i === stage ? 'active' : ''}`}>
+            <div className="step-fill" />
+          </div>
         ))}
       </div>
     </div>
