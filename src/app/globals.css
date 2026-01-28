@@ -124,6 +124,8 @@ body {
 /* Attack Flow Animation */
 .attack-flow-slide {
   padding: clamp(4px, 1vmin, 15px) !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 
 /* ===========================================
