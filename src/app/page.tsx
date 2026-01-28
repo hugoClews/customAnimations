@@ -205,6 +205,24 @@ function DesktopAttackStage({ stage }: { stage: number }) {
   const [trailPositions, setTrailPositions] = useState<{x: number, y: number, age: number}[]>([]);
   const prevStageRef = useRef(stage);
   
+  // Define nodes and stageInfo FIRST (before useEffect uses them)
+  const nodes = [
+    { id: 'usb', label: 'USB', x: 10, y: 75, icon: '💾' },
+    { id: 'laptop', label: 'PC', x: 27, y: 30, icon: '💻' },
+    { id: 'network', label: 'NETWORK', x: 44, y: 75, icon: '🌐' },
+    { id: 'scada', label: 'SCADA', x: 61, y: 30, icon: '🖥️' },
+    { id: 'plc', label: 'PLC', x: 78, y: 75, icon: '⚙️' },
+    { id: 'centrifuge', label: 'TARGET', x: 93, y: 30, icon: '☢️' },
+  ];
+  
+  const stageInfo = [
+    { title: "USB INSERTION", desc: "Infected USB planted by contractor", from: 0, to: 1 },
+    { title: "INITIAL INFECTION", desc: "Worm exploits Windows zero-days", from: 1, to: 2 },
+    { title: "NETWORK SPREAD", desc: "Propagates via shared drives", from: 2, to: 3 },
+    { title: "SCADA COMPROMISE", desc: "Targets WinCC/Step 7 software", from: 3, to: 4 },
+    { title: "PAYLOAD DELIVERY", desc: "Malicious code injected into PLCs", from: 4, to: 5 },
+  ];
+  
   useEffect(() => {
     if (prevStageRef.current !== stage) {
       setPacketProgress(0);
@@ -242,24 +260,7 @@ function DesktopAttackStage({ stage }: { stage: number }) {
       });
     }, 50);
     return () => clearInterval(trailInterval);
-  }, [packetProgress, stage]);
-  
-  const nodes = [
-    { id: 'usb', label: 'USB', x: 10, y: 75, icon: '💾' },
-    { id: 'laptop', label: 'PC', x: 27, y: 30, icon: '💻' },
-    { id: 'network', label: 'NETWORK', x: 44, y: 75, icon: '🌐' },
-    { id: 'scada', label: 'SCADA', x: 61, y: 30, icon: '🖥️' },
-    { id: 'plc', label: 'PLC', x: 78, y: 75, icon: '⚙️' },
-    { id: 'centrifuge', label: 'TARGET', x: 93, y: 30, icon: '☢️' },
-  ];
-  
-  const stageInfo = [
-    { title: "USB INSERTION", desc: "Infected USB planted by contractor", from: 0, to: 1 },
-    { title: "INITIAL INFECTION", desc: "Worm exploits Windows zero-days", from: 1, to: 2 },
-    { title: "NETWORK SPREAD", desc: "Propagates via shared drives", from: 2, to: 3 },
-    { title: "SCADA COMPROMISE", desc: "Targets WinCC/Step 7 software", from: 3, to: 4 },
-    { title: "PAYLOAD DELIVERY", desc: "Malicious code injected into PLCs", from: 4, to: 5 },
-  ];
+  }, [packetProgress, stage, nodes, stageInfo]);
   
   const currentStage = stageInfo[stage] || stageInfo[0];
   const fromNode = nodes[currentStage.from];
