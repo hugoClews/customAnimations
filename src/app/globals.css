@@ -133,17 +133,15 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 .attack-header-v2 {
-  position: absolute;
-  top: clamp(8px, 2vmin, 20px);
-  left: 50%;
-  transform: translateX(-50%);
   text-align: center;
-  z-index: 15;
-  pointer-events: none;
+  padding: clamp(5px, 1.5vmin, 15px) 0;
+  flex-shrink: 0;
 }
 
 .stage-badge {
@@ -193,11 +191,9 @@ body {
 }
 
 .attack-diagram-v2 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: clamp(30px, 8vmin, 60px); /* Leave room for progress bar */
+  position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
 .attack-svg {
@@ -507,13 +503,11 @@ body {
 
 /* Progress bar */
 .attack-progress-bar {
-  position: absolute;
-  bottom: clamp(8px, 2vmin, 16px);
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
+  justify-content: center;
   gap: clamp(4px, 1vmin, 8px);
-  z-index: 15;
+  padding: clamp(5px, 1.5vmin, 12px) 0;
+  flex-shrink: 0;
 }
 
 .progress-segment {
