@@ -296,10 +296,40 @@ function DesktopAttackStage({ stage }: { stage: number }) {
   );
 }
 
+// Compact Attack Stage for small 16:9 viewports
+function CompactAttackStage({ stage }: { stage: number }) {
+  const stages = [
+    { icon: '💾', label: 'USB → PC', title: 'USB INSERTION' },
+    { icon: '💻', label: 'PC → Network', title: 'INITIAL INFECTION' },
+    { icon: '🌐', label: 'Network → SCADA', title: 'NETWORK SPREAD' },
+    { icon: '🖥️', label: 'SCADA → PLC', title: 'SCADA COMPROMISE' },
+    { icon: '⚙️', label: 'PLC → Target', title: 'PAYLOAD DELIVERY' },
+  ];
+  
+  const current = stages[stage];
+  
+  return (
+    <div className="compact-attack">
+      <div className="compact-stage-badge">STAGE {stage + 1}/5</div>
+      <div className="compact-icon">{current.icon}</div>
+      <div className="compact-title">{current.title}</div>
+      <div className="compact-flow">{current.label}</div>
+      <div className="compact-dots">
+        {stages.map((_, i) => (
+          <span key={i} className={`compact-dot ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Wrapper component that chooses between mobile and desktop layouts
-function AttackStage({ stage, isMobile = false }: { stage: number; isMobile?: boolean }) {
+function AttackStage({ stage, isMobile = false, isCompact = false }: { stage: number; isMobile?: boolean; isCompact?: boolean }) {
   if (isMobile) {
     return <MobileAttackStage stage={stage} />;
+  }
+  if (isCompact) {
+    return <CompactAttackStage stage={stage} />;
   }
   return <DesktopAttackStage stage={stage} />;
 }
@@ -391,6 +421,18 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [ratio, setRatio] = useState<"16:9" | "9:16">("16:9");
   const [animationKey, setAnimationKey] = useState(0);
+  const [isSmallViewport, setIsSmallViewport] = useState(false);
+  
+  // Detect small viewport for compact mode
+  useEffect(() => {
+    const checkSize = () => {
+      // Use compact mode when viewport width < 500px and in 16:9 mode
+      setIsSmallViewport(window.innerWidth < 500);
+    };
+    checkSize();
+    window.addEventListener('resize', checkSize);
+    return () => window.removeEventListener('resize', checkSize);
+  }, []);
 
   const goToSlide = useCallback((index: number) => {
     if (index >= 0 && index < story.slides.length) {
@@ -511,7 +553,7 @@ export default function Home() {
       case "attackFlow":
         return (
           <div className="slide-content attack-flow-slide" key={animationKey}>
-            <AttackStage stage={slide.stage || 0} isMobile={ratio === "9:16"} />
+            <AttackStage stage={slide.stage || 0} isMobile={ratio === "9:16"} isCompact={ratio === "16:9" && isSmallViewport} />
           </div>
         );
 

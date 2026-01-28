@@ -920,3 +920,75 @@ body {
 .mb-8 {
   margin-bottom: clamp(20px, 5vmin, 40px);
 }
+
+/* ===========================================
+   COMPACT ATTACK FLOW (16:9 on small screens)
+   Text-focused, no diagram
+   =========================================== */
+.compact-attack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: clamp(4px, 1.5vmin, 12px);
+  padding: clamp(4px, 1vmin, 10px);
+}
+
+.compact-stage-badge {
+  font-size: clamp(8px, 1.5vmin, 12px);
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 1px;
+  opacity: 0.9;
+}
+
+.compact-icon {
+  font-size: clamp(28px, 8vmin, 50px);
+  filter: drop-shadow(0 0 10px var(--accent2));
+  animation: compactPulse 2s ease-in-out infinite;
+}
+
+@keyframes compactPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.compact-title {
+  font-size: clamp(12px, 3vmin, 20px);
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.compact-flow {
+  font-size: clamp(10px, 2vmin, 14px);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.compact-dots {
+  display: flex;
+  gap: clamp(4px, 1vmin, 8px);
+  margin-top: clamp(4px, 1vmin, 10px);
+}
+
+.compact-dot {
+  width: clamp(6px, 1.5vmin, 10px);
+  height: clamp(6px, 1.5vmin, 10px);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.compact-dot.active {
+  background: var(--accent);
+}
+
+.compact-dot.current {
+  background: var(--accent2);
+  box-shadow: 0 0 8px var(--accent2);
+  transform: scale(1.3);
+}
