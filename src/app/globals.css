@@ -136,12 +136,13 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding: clamp(10px, 2vmin, 20px);
 }
 
 .attack-header-v2 {
   text-align: center;
   flex-shrink: 0;
-  padding: clamp(8px, 2vmin, 20px) 0;
+  padding-bottom: clamp(5px, 1vmin, 15px);
   position: relative;
   z-index: 5;
 }
@@ -151,35 +152,35 @@ body {
   align-items: baseline;
   gap: clamp(2px, 0.5vmin, 6px);
   font-family: 'Courier New', monospace;
-  margin-bottom: clamp(4px, 1vmin, 10px);
+  margin-bottom: clamp(2px, 0.5vmin, 8px);
 }
 
 .stage-num {
-  font-size: clamp(20px, 5vmin, 42px);
+  font-size: clamp(18px, 4vmin, 36px);
   font-weight: 900;
   color: var(--accent2);
   text-shadow: 0 0 20px var(--accent2), 0 0 40px var(--accent2);
 }
 
 .stage-divider {
-  font-size: clamp(14px, 3vmin, 28px);
+  font-size: clamp(12px, 2.5vmin, 24px);
   color: var(--text-dim);
   opacity: 0.5;
 }
 
 .stage-total {
-  font-size: clamp(14px, 3vmin, 28px);
+  font-size: clamp(12px, 2.5vmin, 24px);
   font-weight: 600;
   color: var(--text-dim);
 }
 
 .stage-title-v2 {
-  font-size: clamp(14px, 3.5vmin, 32px);
+  font-size: clamp(12px, 2.8vmin, 26px);
   font-weight: 800;
   color: var(--text);
   text-transform: uppercase;
-  letter-spacing: clamp(2px, 0.5vmin, 6px);
-  margin: clamp(4px, 1vmin, 10px) 0;
+  letter-spacing: clamp(1px, 0.3vmin, 4px);
+  margin: clamp(2px, 0.5vmin, 8px) 0;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -187,7 +188,7 @@ body {
 }
 
 .stage-desc-v2 {
-  font-size: clamp(10px, 2vmin, 16px);
+  font-size: clamp(9px, 1.6vmin, 14px);
   color: var(--text-dim);
   opacity: 0.8;
 }
@@ -196,6 +197,7 @@ body {
   position: relative;
   flex: 1;
   min-height: 0;
+  margin-top: clamp(5px, 1vmin, 15px);
 }
 
 .attack-svg {
@@ -328,17 +330,17 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(4px, 1vmin, 10px);
+  gap: clamp(3px, 0.8vmin, 8px);
   z-index: 10;
   transition: all 0.4s ease;
 }
 
 .node-icon-wrap {
   position: relative;
-  padding: clamp(8px, 2vmin, 18px);
+  padding: clamp(6px, 1.5vmin, 14px);
   background: rgba(10, 10, 15, 0.9);
   border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: clamp(8px, 2vmin, 16px);
+  border-radius: clamp(6px, 1.5vmin, 12px);
   transition: all 0.4s ease;
 }
 
@@ -365,7 +367,7 @@ body {
 }
 
 .node-icon-v2 {
-  font-size: clamp(24px, 5vmin, 44px);
+  font-size: clamp(20px, 4vmin, 36px);
   filter: grayscale(1) opacity(0.4);
   transition: all 0.4s ease;
   display: block;
@@ -408,12 +410,13 @@ body {
 }
 
 .node-status {
-  font-size: clamp(6px, 1vmin, 9px);
+  font-size: clamp(5px, 0.9vmin, 8px);
   font-weight: 600;
-  letter-spacing: 0.5px;
-  padding: clamp(2px, 0.4vmin, 4px) clamp(6px, 1vmin, 10px);
+  letter-spacing: 0.3px;
+  padding: clamp(1px, 0.3vmin, 3px) clamp(4px, 0.8vmin, 8px);
   border-radius: 20px;
-  opacity: 0.8;
+  opacity: 0.7;
+  white-space: nowrap;
 }
 
 .node-status.compromised {
