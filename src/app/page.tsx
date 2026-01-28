@@ -270,166 +270,116 @@ const stories: Record<string, Story> = {
   }
 };
 
-// Real South Korea GeoJSON coordinates converted to SVG path
-// Original coords: [[128.349716,38.612243],[129.21292,37.432392],...]
-// Projected to viewBox with proper aspect ratio
+// Korea Location Map using real Google Maps screenshot
 function KoreaLocationMap() {
-  // South Korea path from actual GeoJSON - projected to fit viewBox
-  // ViewBox: We'll use 0 0 400 400, center around Korea
-  // Korea roughly spans: lon 126-130, lat 34-39
-  // Transform: x = (lon - 124) * 50, y = (42 - lat) * 50
-  const koreaPath = "M 217 170 L 261 209 L 273 241 L 273 283 L 255 308 L 209 326 L 169 340 L 125 347 L 119 327 L 128 283 L 106 231 L 143 204 L 109 162 L 112 158 L 134 154 L 154 131 L 190 127 L 210 123 L 217 170 Z";
-  
-  // Seoul coordinates: roughly 127°, 37.5°
-  const seoulX = (127 - 124) * 50; // = 150
-  const seoulY = (42 - 37.5) * 50; // = 225
-  
   return (
-    <svg className="map-svg" viewBox="0 0 400 450" preserveAspectRatio="xMidYMid meet">
-      {/* Background sea */}
-      <rect x="0" y="0" width="400" height="450" fill="rgba(0,20,40,0.3)" />
-      
-      {/* South Korea - real outline */}
-      <path 
-        className="country-path origin" 
-        d={koreaPath}
-        transform="translate(0, 20)"
+    <div className="map-image-container">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img 
+        src="/stuxnet-story/korea-map.png" 
+        alt="Map of South Korea" 
+        className="map-image"
       />
-      
-      {/* Seoul marker with pulse */}
-      <circle className="location-pulse" cx={seoulX} cy={seoulY + 40} r="12">
-        <animate attributeName="r" values="12;22;12" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
-      </circle>
-      <circle className="city-marker" cx={seoulX} cy={seoulY + 40} r="8"/>
-      <text className="city-label" x={seoulX + 15} y={seoulY + 45} fontSize="14" fontWeight="600">Seoul</text>
-      
-      {/* Coupang HQ indicator */}
-      <rect x={seoulX - 5} y={seoulY + 55} width="95" height="28" rx="4" fill="rgba(255,51,102,0.2)" stroke="var(--accent2)" strokeWidth="1.5"/>
-      <text x={seoulX + 42} y={seoulY + 74} fill="var(--text)" fontSize="11" textAnchor="middle" fontWeight="600">Coupang HQ</text>
-      
-      {/* Busan marker */}
-      <circle cx="250" cy="355" r="5" fill="rgba(0,240,255,0.5)"/>
-      <text x="265" y="360" fontSize="11" fill="var(--text-dim)">Busan</text>
-      
-      {/* Incheon marker */}
-      <circle cx="130" cy="255" r="5" fill="rgba(0,240,255,0.5)"/>
-      <text x="85" y="260" fontSize="11" fill="var(--text-dim)">Incheon</text>
-      
-      {/* Sea labels */}
-      <text x="30" y="300" fill="var(--text-dim)" fontSize="13" fontStyle="italic" opacity="0.7">Yellow</text>
-      <text x="40" y="318" fill="var(--text-dim)" fontSize="13" fontStyle="italic" opacity="0.7">Sea</text>
-      <text x="320" y="200" fill="var(--text-dim)" fontSize="13" fontStyle="italic" opacity="0.7">East Sea</text>
-      <text x="305" y="218" fill="var(--text-dim)" fontSize="11" fontStyle="italic" opacity="0.5">(Sea of Japan)</text>
-    </svg>
+      {/* Overlay with animated markers */}
+      <svg className="map-overlay" viewBox="0 0 776 494" preserveAspectRatio="xMidYMid meet">
+        {/* Seoul marker - positioned over Seoul on the map (approx 385, 230) */}
+        <circle className="location-pulse-img" cx="385" cy="230" r="20">
+          <animate attributeName="r" values="20;35;20" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="385" cy="230" r="12" fill="var(--accent2)" filter="url(#glow)"/>
+        
+        {/* Coupang HQ label */}
+        <rect x="400" y="215" width="120" height="35" rx="6" fill="rgba(0,0,0,0.8)" stroke="var(--accent2)" strokeWidth="2"/>
+        <text x="460" y="238" fill="white" fontSize="14" textAnchor="middle" fontWeight="700">Coupang HQ</text>
+        
+        {/* Glow filter */}
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
   );
 }
 
-// Korea to China Flight Map with real country outlines
+// Korea to China Flight Map using real Google Maps screenshot
 function KoreaChinaFlightMap() {
-  // For this view, we need both countries visible
-  // Wider viewBox: lon 108-132, lat 20-42
-  // Transform: x = (lon - 105) * 15, y = (45 - lat) * 15
-  
-  // China's eastern coast (simplified from GeoJSON for the visible area)
-  const chinaPath = `
-    M 75 375 
-    L 60 360 L 55 340 L 65 315 L 60 290 L 50 270 
-    L 55 250 L 70 230 L 90 210 L 105 195 
-    L 130 175 L 145 160 L 165 145 L 180 125 
-    L 200 110 L 220 95 L 245 80 L 270 70 
-    L 290 65 L 315 60 L 340 55 L 360 50
-    L 380 48 L 400 50
-    L 400 0 L 0 0 L 0 400 L 60 400 L 75 375
-    Z
-  `;
-  
-  // South Korea (scaled for this view)
-  const koreaPath = `
-    M 352 185 L 372 210 L 380 230 L 378 260 
-    L 365 280 L 340 295 L 318 305 L 300 308 
-    L 295 295 L 300 270 L 285 240 L 305 220 
-    L 285 195 L 290 190 L 305 188 L 318 175 
-    L 340 172 L 350 170 L 352 185 Z
-  `;
-  
-  // Seoul position in this projection
-  const seoulX = (127 - 105) * 15; // = 330
-  const seoulY = (45 - 37.5) * 15; // = 112.5 -> ~190 with offset
-  
-  // Qingdao area (destination)
-  const destX = (120 - 105) * 15; // = 225
-  const destY = (45 - 36) * 15; // = 135 -> ~200 with offset
-  
   return (
-    <svg className="map-svg" viewBox="0 0 500 380" preserveAspectRatio="xMidYMid meet">
-      {/* Background sea */}
-      <rect x="0" y="0" width="500" height="380" fill="rgba(0,20,40,0.3)" />
-      
-      {/* Yellow Sea area */}
-      <text x="240" y="260" fill="var(--accent)" fontSize="14" fontStyle="italic" opacity="0.5">Yellow Sea</text>
-      
-      {/* China - eastern coast */}
-      <path 
-        className="country-path highlight" 
-        d={chinaPath}
+    <div className="map-image-container">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img 
+        src="/stuxnet-story/korea-china-map.png" 
+        alt="Map of Korea and China" 
+        className="map-image"
       />
-      <text x="100" y="180" fill="var(--text)" fontSize="20" fontWeight="700">CHINA</text>
-      
-      {/* South Korea */}
-      <path 
-        className="country-path origin" 
-        d={koreaPath}
-      />
-      <text x="330" y="250" fill="var(--text)" fontSize="14" fontWeight="600">S. KOREA</text>
-      
-      {/* Seoul marker */}
-      <circle className="location-pulse" cx="335" cy="195" r="8">
-        <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
-      </circle>
-      <circle className="city-marker" cx="335" cy="195" r="6"/>
-      <text className="city-label" x="348" y="192" fontSize="12">Seoul</text>
-      
-      {/* Chinese destination area */}
-      <circle cx="200" cy="195" r="6" fill="var(--accent2)" opacity="0.8"/>
-      <text x="150" y="215" fill="var(--text-dim)" fontSize="11">
-        <tspan x="150" dy="0">Destination</tspan>
-        <tspan x="150" dy="14">Unknown</tspan>
-      </text>
-      
-      {/* Flight path (animated curve) */}
-      <path 
-        className="flight-path" 
-        d="M 335 195 Q 280 160 240 175 Q 220 182 200 195"
-        strokeDasharray="500"
-        strokeDashoffset="500"
-      >
-        <animate 
-          attributeName="stroke-dashoffset" 
-          from="500" 
-          to="0" 
-          dur="2s" 
-          fill="freeze"
-          begin="0.3s"
-        />
-      </path>
-      
-      {/* Arrow head at destination */}
-      <polygon className="flight-arrow" points="200,195 212,187 214,199 202,203" opacity="0">
-        <animate 
-          attributeName="opacity" 
-          from="0" 
-          to="1" 
-          dur="0.3s" 
-          fill="freeze"
-          begin="2s"
-        />
-      </polygon>
-      
-      {/* Distance indicator */}
-      <text x="260" y="145" fill="var(--accent2)" fontSize="12" fontWeight="600">~800 km</text>
-    </svg>
+      {/* Overlay with animated flight path */}
+      <svg className="map-overlay" viewBox="0 0 776 494" preserveAspectRatio="xMidYMid meet">
+        {/* Glow filter */}
+        <defs>
+          <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
+        {/* Seoul marker - positioned over South Korea on the map (approx 520, 225) */}
+        <circle className="location-pulse-img" cx="520" cy="225" r="15">
+          <animate attributeName="r" values="15;28;15" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="520" cy="225" r="10" fill="var(--accent)" filter="url(#glow2)"/>
+        <text x="545" y="220" fill="white" fontSize="14" fontWeight="700" filter="url(#glow2)">Seoul</text>
+        
+        {/* Destination in China - Qingdao area (approx 95, 265) */}
+        <circle cx="95" cy="265" r="10" fill="var(--accent2)" filter="url(#glow2)"/>
+        <rect x="20" y="285" width="100" height="35" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
+        <text x="70" y="300" fill="var(--text-dim)" fontSize="10" textAnchor="middle">Destination</text>
+        <text x="70" y="314" fill="white" fontSize="11" textAnchor="middle" fontWeight="600">Unknown</text>
+        
+        {/* Animated flight path - curved arc from Seoul to China */}
+        <path 
+          d="M 520 225 Q 380 150 250 200 Q 170 230 95 265"
+          fill="none"
+          stroke="var(--accent2)"
+          strokeWidth="4"
+          strokeDasharray="600"
+          strokeDashoffset="600"
+          filter="url(#glow2)"
+        >
+          <animate 
+            attributeName="stroke-dashoffset" 
+            from="600" 
+            to="0" 
+            dur="2.5s" 
+            fill="freeze"
+            begin="0.3s"
+          />
+        </path>
+        
+        {/* Animated plane/arrow along the path */}
+        <circle r="8" fill="var(--accent2)" filter="url(#glow2)">
+          <animateMotion 
+            dur="2.5s" 
+            begin="0.3s"
+            fill="freeze"
+            path="M 520 225 Q 380 150 250 200 Q 170 230 95 265"
+          />
+        </circle>
+        
+        {/* Distance label */}
+        <rect x="280" y="140" width="90" height="30" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
+        <text x="325" y="160" fill="var(--accent2)" fontSize="14" textAnchor="middle" fontWeight="700">~800 km</text>
+      </svg>
+    </div>
   );
 }
 
