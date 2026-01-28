@@ -150,108 +150,64 @@ const story: Story = {
   ]
 };
 
-// Mobile Attack Stage V2 - Enhanced vertical flow with animations
+// Mobile Attack Stage V2 - Clean vertical flow with subtle animations
 function MobileAttackStage({ stage }: { stage: number }) {
-  const [dataProgress, setDataProgress] = useState(0);
+  const [pulsePhase, setPulsePhase] = useState(0);
   
   useEffect(() => {
-    setDataProgress(0);
     const interval = setInterval(() => {
-      setDataProgress(p => (p + 0.02) % 1);
-    }, 30);
+      setPulsePhase(p => (p + 1) % 100);
+    }, 50);
     return () => clearInterval(interval);
-  }, [stage]);
+  }, []);
   
-  const allNodes = [
-    { icon: '💾', label: 'USB' },
-    { icon: '💻', label: 'PC' },
-    { icon: '🌐', label: 'NETWORK' },
-    { icon: '🖥️', label: 'SCADA' },
-    { icon: '⚙️', label: 'PLC' },
-    { icon: '☢️', label: 'TARGET' },
+  const stages = [
+    { from: '💾', fromLabel: 'USB', to: '💻', toLabel: 'PC', title: 'USB INSERTION', desc: 'Infected USB planted' },
+    { from: '💻', fromLabel: 'PC', to: '🌐', toLabel: 'NETWORK', title: 'INITIAL INFECTION', desc: 'Exploits Windows zero-days' },
+    { from: '🌐', fromLabel: 'NETWORK', to: '🖥️', toLabel: 'SCADA', title: 'NETWORK SPREAD', desc: 'Propagates via shared drives' },
+    { from: '🖥️', fromLabel: 'SCADA', to: '⚙️', toLabel: 'PLC', title: 'SCADA COMPROMISE', desc: 'Targets Siemens software' },
+    { from: '⚙️', fromLabel: 'PLC', to: '☢️', toLabel: 'TARGET', title: 'PAYLOAD DELIVERY', desc: 'Injects malicious code' },
   ];
   
-  const stageInfo = [
-    { title: 'USB INSERTION', desc: 'Infected USB planted by contractor' },
-    { title: 'INITIAL INFECTION', desc: 'Worm exploits Windows zero-days' },
-    { title: 'NETWORK SPREAD', desc: 'Propagates through shared drives' },
-    { title: 'SCADA COMPROMISE', desc: 'Targets WinCC/Step 7 software' },
-    { title: 'PAYLOAD DELIVERY', desc: 'Malicious code injected into PLCs' },
-  ];
-  
-  const current = stageInfo[stage];
-  const sourceNode = allNodes[stage];
-  const targetNode = allNodes[stage + 1];
+  const current = stages[stage];
+  const pulseY = (pulsePhase / 100) * 100;
   
   return (
-    <div className="mobile-attack-v2">
-      {/* Header */}
-      <div className="mobile-header-v2">
-        <div className="mobile-stage-badge">
-          <span className="mobile-stage-num-v2">0{stage + 1}</span>
-          <span className="mobile-stage-divider">/</span>
-          <span className="mobile-stage-total">05</span>
-        </div>
-        <h3 className="mobile-title-v2">{current.title}</h3>
+    <div className="mobile-v2">
+      {/* Stage indicator */}
+      <div className="mv2-header">
+        <span className="mv2-stage">STAGE {stage + 1} OF 5</span>
+        <h3 className="mv2-title">{current.title}</h3>
       </div>
       
-      {/* Infected chain - show previously infected nodes */}
-      {stage > 0 && (
-        <div className="mobile-infected-chain">
-          {allNodes.slice(0, stage).map((node, i) => (
-            <div key={i} className="chain-node">
-              <span className="chain-icon">{node.icon}</span>
-              {i < stage - 1 && <span className="chain-connector">→</span>}
-            </div>
-          ))}
-        </div>
-      )}
-      
-      {/* Main attack visual */}
-      <div className="mobile-attack-center">
-        {/* Source node */}
-        <div className="mobile-node-v2 source">
-          <div className="node-glow source-glow" />
-          <div className="node-ring" />
-          <div className="node-inner">
-            <span className="node-emoji">{sourceNode.icon}</span>
-          </div>
-          <span className="node-name">{sourceNode.label}</span>
-          <span className="node-badge infected">⚠ INFECTED</span>
+      {/* Attack visualization */}
+      <div className="mv2-visual">
+        {/* Source */}
+        <div className="mv2-node mv2-source">
+          <span className="mv2-icon">{current.from}</span>
+          <span className="mv2-label">{current.fromLabel}</span>
         </div>
         
-        {/* Data stream */}
-        <div className="mobile-data-stream">
-          <div className="stream-line" />
-          <div className="stream-glow" />
-          {/* Multiple data packets */}
-          <div className="data-packet packet-1" style={{ top: `${dataProgress * 100}%` }} />
-          <div className="data-packet packet-2" style={{ top: `${((dataProgress + 0.3) % 1) * 100}%` }} />
-          <div className="data-packet packet-3" style={{ top: `${((dataProgress + 0.6) % 1) * 100}%` }} />
-          <div className="stream-arrow">▼</div>
+        {/* Connection */}
+        <div className="mv2-connection">
+          <div className="mv2-line" />
+          <div className="mv2-pulse" style={{ top: `${pulseY}%` }} />
         </div>
         
-        {/* Target node */}
-        <div className="mobile-node-v2 target">
-          <div className="node-glow target-glow" />
-          <div className="scan-effect" />
-          <div className="node-inner target-inner">
-            <span className="node-emoji">{targetNode.icon}</span>
-          </div>
-          <span className="node-name">{targetNode.label}</span>
-          <span className="node-badge targeting">◉ TARGETING</span>
+        {/* Target */}
+        <div className="mv2-node mv2-target">
+          <span className="mv2-icon">{current.to}</span>
+          <span className="mv2-label">{current.toLabel}</span>
         </div>
       </div>
       
       {/* Description */}
-      <p className="mobile-desc-v2">{current.desc}</p>
+      <p className="mv2-desc">{current.desc}</p>
       
-      {/* Progress indicator */}
-      <div className="mobile-progress-v2">
-        {stageInfo.map((_, i) => (
-          <div key={i} className={`progress-step ${i < stage ? 'complete' : ''} ${i === stage ? 'active' : ''}`}>
-            <div className="step-fill" />
-          </div>
+      {/* Progress dots */}
+      <div className="mv2-progress">
+        {stages.map((_, i) => (
+          <div key={i} className={`mv2-dot ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} />
         ))}
       </div>
     </div>
