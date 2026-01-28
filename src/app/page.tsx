@@ -281,17 +281,17 @@ function KoreaLocationMap() {
         className="map-image"
       />
       {/* Overlay with animated markers */}
-      <svg className="map-overlay" viewBox="0 0 776 494" preserveAspectRatio="xMidYMid meet">
-        {/* Seoul marker - positioned over Seoul on the map (approx 385, 230) */}
-        <circle className="location-pulse-img" cx="385" cy="230" r="20">
-          <animate attributeName="r" values="20;35;20" dur="2s" repeatCount="indefinite"/>
+      <svg className="map-overlay" viewBox="0 0 700 350" preserveAspectRatio="xMidYMid meet">
+        {/* Seoul marker - positioned over Seoul on the map (approx 350, 175) */}
+        <circle className="location-pulse-img" cx="350" cy="175" r="18">
+          <animate attributeName="r" values="18;32;18" dur="2s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="385" cy="230" r="12" fill="var(--accent2)" filter="url(#glow)"/>
+        <circle cx="350" cy="175" r="10" fill="var(--accent2)" filter="url(#glow)"/>
         
         {/* Coupang HQ label */}
-        <rect x="400" y="215" width="120" height="35" rx="6" fill="rgba(0,0,0,0.8)" stroke="var(--accent2)" strokeWidth="2"/>
-        <text x="460" y="238" fill="white" fontSize="14" textAnchor="middle" fontWeight="700">Coupang HQ</text>
+        <rect x="365" y="160" width="110" height="32" rx="6" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="2"/>
+        <text x="420" y="181" fill="white" fontSize="13" textAnchor="middle" fontWeight="700">Coupang HQ</text>
         
         {/* Glow filter */}
         <defs>
@@ -319,7 +319,7 @@ function KoreaChinaFlightMap() {
         className="map-image"
       />
       {/* Overlay with animated flight path */}
-      <svg className="map-overlay" viewBox="0 0 776 494" preserveAspectRatio="xMidYMid meet">
+      <svg className="map-overlay" viewBox="0 0 700 350" preserveAspectRatio="xMidYMid meet">
         {/* Glow filter */}
         <defs>
           <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
@@ -331,33 +331,33 @@ function KoreaChinaFlightMap() {
           </filter>
         </defs>
         
-        {/* Seoul marker - positioned over South Korea on the map (approx 520, 225) */}
-        <circle className="location-pulse-img" cx="520" cy="225" r="15">
-          <animate attributeName="r" values="15;28;15" dur="2s" repeatCount="indefinite"/>
+        {/* Seoul marker - positioned over South Korea on the map (approx 480, 155) */}
+        <circle className="location-pulse-img" cx="480" cy="155" r="14">
+          <animate attributeName="r" values="14;25;14" dur="2s" repeatCount="indefinite"/>
           <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="520" cy="225" r="10" fill="var(--accent)" filter="url(#glow2)"/>
-        <text x="545" y="220" fill="white" fontSize="14" fontWeight="700" filter="url(#glow2)">Seoul</text>
+        <circle cx="480" cy="155" r="8" fill="var(--accent)" filter="url(#glow2)"/>
+        <text x="500" y="150" fill="white" fontSize="13" fontWeight="700" filter="url(#glow2)">Seoul</text>
         
-        {/* Destination in China - Qingdao area (approx 95, 265) */}
-        <circle cx="95" cy="265" r="10" fill="var(--accent2)" filter="url(#glow2)"/>
-        <rect x="20" y="285" width="100" height="35" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
-        <text x="70" y="300" fill="var(--text-dim)" fontSize="10" textAnchor="middle">Destination</text>
-        <text x="70" y="314" fill="white" fontSize="11" textAnchor="middle" fontWeight="600">Unknown</text>
+        {/* Destination in China - Qingdao area (approx 55, 180) */}
+        <circle cx="55" cy="180" r="8" fill="var(--accent2)" filter="url(#glow2)"/>
+        <rect x="10" y="200" width="90" height="32" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
+        <text x="55" y="213" fill="var(--text-dim)" fontSize="9" textAnchor="middle">Destination</text>
+        <text x="55" y="226" fill="white" fontSize="10" textAnchor="middle" fontWeight="600">Unknown</text>
         
         {/* Animated flight path - curved arc from Seoul to China */}
         <path 
-          d="M 520 225 Q 380 150 250 200 Q 170 230 95 265"
+          d="M 480 155 Q 350 100 220 140 Q 140 160 55 180"
           fill="none"
           stroke="var(--accent2)"
           strokeWidth="4"
-          strokeDasharray="600"
-          strokeDashoffset="600"
+          strokeDasharray="500"
+          strokeDashoffset="500"
           filter="url(#glow2)"
         >
           <animate 
             attributeName="stroke-dashoffset" 
-            from="600" 
+            from="500" 
             to="0" 
             dur="2.5s" 
             fill="freeze"
@@ -366,18 +366,18 @@ function KoreaChinaFlightMap() {
         </path>
         
         {/* Animated plane/arrow along the path */}
-        <circle r="8" fill="var(--accent2)" filter="url(#glow2)">
+        <circle r="7" fill="var(--accent2)" filter="url(#glow2)">
           <animateMotion 
             dur="2.5s" 
             begin="0.3s"
             fill="freeze"
-            path="M 520 225 Q 380 150 250 200 Q 170 230 95 265"
+            path="M 480 155 Q 350 100 220 140 Q 140 160 55 180"
           />
         </circle>
         
         {/* Distance label */}
-        <rect x="280" y="140" width="90" height="30" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
-        <text x="325" y="160" fill="var(--accent2)" fontSize="14" textAnchor="middle" fontWeight="700">~800 km</text>
+        <rect x="240" y="85" width="80" height="26" rx="4" fill="rgba(0,0,0,0.85)" stroke="var(--accent2)" strokeWidth="1.5"/>
+        <text x="280" y="103" fill="var(--accent2)" fontSize="12" textAnchor="middle" fontWeight="700">~800 km</text>
       </svg>
     </div>
   );
