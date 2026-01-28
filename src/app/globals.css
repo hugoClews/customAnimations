@@ -997,6 +997,65 @@ body {
   50% { opacity: 1; }
 }
 
+/* ===========================================
+   DESKTOP 9:16 FIX - Scale down vertical attack
+   Desktop has taller pixels, so we need smaller elements
+   =========================================== */
+@media (min-width: 500px) {
+  .vert-attack {
+    padding: clamp(4px, 1vmin, 8px);
+  }
+  
+  .vert-chain {
+    max-height: calc(100% - 80px); /* Leave room for header/footer */
+    overflow: hidden;
+  }
+  
+  .vert-node {
+    padding: clamp(3px, 0.8vmin, 6px) clamp(6px, 1.5vmin, 10px);
+    gap: clamp(3px, 0.8vmin, 6px);
+  }
+  
+  .vert-icon {
+    font-size: clamp(14px, 3vmin, 22px);
+  }
+  
+  .vert-label {
+    font-size: clamp(7px, 1.5vmin, 10px);
+  }
+  
+  .vert-conn {
+    height: clamp(8px, 2vmin, 14px);
+  }
+  
+  .vert-header {
+    margin-bottom: clamp(2px, 0.5vmin, 6px);
+  }
+  
+  .vert-stage-num {
+    font-size: clamp(14px, 3vmin, 22px);
+  }
+  
+  .vert-title {
+    font-size: clamp(10px, 2.5vmin, 16px);
+    margin-top: clamp(1px, 0.3vmin, 4px);
+  }
+  
+  .vert-desc {
+    font-size: clamp(9px, 2vmin, 12px);
+    margin: clamp(2px, 0.5vmin, 6px) 0;
+  }
+  
+  .vert-progress {
+    gap: clamp(3px, 0.8vmin, 6px);
+  }
+  
+  .vert-seg {
+    width: clamp(20px, 5vmin, 32px);
+    height: clamp(2px, 0.6vmin, 4px);
+  }
+}
+
 /* Legacy mobile styles for backwards compatibility */
 .mobile-attack {
   display: flex;
