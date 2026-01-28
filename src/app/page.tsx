@@ -245,12 +245,12 @@ function DesktopAttackStage({ stage }: { stage: number }) {
   }, [packetProgress, stage]);
   
   const nodes = [
-    { id: 'usb', label: 'USB', x: 8, y: 65, icon: '💾' },
-    { id: 'laptop', label: 'PC', x: 26, y: 35, icon: '💻' },
-    { id: 'network', label: 'NETWORK', x: 44, y: 65, icon: '🌐' },
-    { id: 'scada', label: 'SCADA', x: 62, y: 35, icon: '🖥️' },
-    { id: 'plc', label: 'PLC', x: 80, y: 65, icon: '⚙️' },
-    { id: 'centrifuge', label: 'TARGET', x: 94, y: 35, icon: '☢️' },
+    { id: 'usb', label: 'USB', x: 10, y: 75, icon: '💾' },
+    { id: 'laptop', label: 'PC', x: 27, y: 30, icon: '💻' },
+    { id: 'network', label: 'NETWORK', x: 44, y: 75, icon: '🌐' },
+    { id: 'scada', label: 'SCADA', x: 61, y: 30, icon: '🖥️' },
+    { id: 'plc', label: 'PLC', x: 78, y: 75, icon: '⚙️' },
+    { id: 'centrifuge', label: 'TARGET', x: 93, y: 30, icon: '☢️' },
   ];
   
   const stageInfo = [
@@ -416,10 +416,6 @@ function DesktopAttackStage({ stage }: { stage: number }) {
                 <span className="node-icon-v2">{node.icon}</span>
               </div>
               <span className="node-label-v2">{node.label}</span>
-              {/* Status indicator */}
-              <div className={`node-status ${isInfected ? 'compromised' : isTarget ? 'vulnerable' : 'secure'}`}>
-                {isInfected ? '⚠ COMPROMISED' : isTarget ? '◉ TARGETING' : '○ SECURE'}
-              </div>
             </div>
           );
         })}
