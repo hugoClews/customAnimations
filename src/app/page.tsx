@@ -150,64 +150,104 @@ const story: Story = {
   ]
 };
 
-// Mobile Attack Stage V2 - Clean vertical flow with subtle animations
+// Mobile Attack Stage V2 - Vertical chain with animated infection spread
 function MobileAttackStage({ stage }: { stage: number }) {
-  const [pulsePhase, setPulsePhase] = useState(0);
+  const [packetY, setPacketY] = useState(0);
+  const [showBurst, setShowBurst] = useState(false);
   
   useEffect(() => {
+    setPacketY(0);
+    setShowBurst(false);
     const interval = setInterval(() => {
-      setPulsePhase(p => (p + 1) % 100);
-    }, 50);
+      setPacketY(p => {
+        const next = p + 0.015;
+        if (next >= 0.95 && p < 0.95) setShowBurst(true);
+        return Math.min(1, next);
+      });
+    }, 25);
     return () => clearInterval(interval);
-  }, []);
+  }, [stage]);
   
-  const stages = [
-    { from: '💾', fromLabel: 'USB', to: '💻', toLabel: 'PC', title: 'USB INSERTION', desc: 'Infected USB planted' },
-    { from: '💻', fromLabel: 'PC', to: '🌐', toLabel: 'NETWORK', title: 'INITIAL INFECTION', desc: 'Exploits Windows zero-days' },
-    { from: '🌐', fromLabel: 'NETWORK', to: '🖥️', toLabel: 'SCADA', title: 'NETWORK SPREAD', desc: 'Propagates via shared drives' },
-    { from: '🖥️', fromLabel: 'SCADA', to: '⚙️', toLabel: 'PLC', title: 'SCADA COMPROMISE', desc: 'Targets Siemens software' },
-    { from: '⚙️', fromLabel: 'PLC', to: '☢️', toLabel: 'TARGET', title: 'PAYLOAD DELIVERY', desc: 'Injects malicious code' },
+  const allNodes = [
+    { icon: '💾', label: 'USB' },
+    { icon: '💻', label: 'PC' },
+    { icon: '🌐', label: 'NET' },
+    { icon: '🖥️', label: 'SCADA' },
+    { icon: '⚙️', label: 'PLC' },
+    { icon: '☢️', label: 'TARGET' },
   ];
   
-  const current = stages[stage];
-  const pulseY = (pulsePhase / 100) * 100;
+  const stageInfo = [
+    { title: 'USB INSERTION', desc: 'Infected USB planted' },
+    { title: 'INITIAL INFECTION', desc: 'Exploits zero-days' },
+    { title: 'NETWORK SPREAD', desc: 'Spreads via shares' },
+    { title: 'SCADA COMPROMISE', desc: 'Targets Siemens' },
+    { title: 'PAYLOAD DELIVERY', desc: 'Code injected' },
+  ];
   
   return (
-    <div className="mobile-v2">
-      {/* Stage indicator */}
-      <div className="mv2-header">
-        <span className="mv2-stage">STAGE {stage + 1} OF 5</span>
-        <h3 className="mv2-title">{current.title}</h3>
+    <div className="vert-attack">
+      {/* Header */}
+      <div className="vert-header">
+        <span className="vert-stage-num">0{stage + 1}/05</span>
+        <h3 className="vert-title">{stageInfo[stage].title}</h3>
       </div>
       
-      {/* Attack visualization */}
-      <div className="mv2-visual">
-        {/* Source */}
-        <div className="mv2-node mv2-source">
-          <span className="mv2-icon">{current.from}</span>
-          <span className="mv2-label">{current.fromLabel}</span>
-        </div>
-        
-        {/* Connection */}
-        <div className="mv2-connection">
-          <div className="mv2-line" />
-          <div className="mv2-pulse" style={{ top: `${pulseY}%` }} />
-        </div>
-        
-        {/* Target */}
-        <div className="mv2-node mv2-target">
-          <span className="mv2-icon">{current.to}</span>
-          <span className="mv2-label">{current.toLabel}</span>
-        </div>
+      {/* Vertical node chain */}
+      <div className="vert-chain">
+        {allNodes.map((node, i) => {
+          const isInfected = i <= stage;
+          const isSource = i === stage;
+          const isTarget = i === stage + 1;
+          const showConnection = i < allNodes.length - 1;
+          const isActiveConnection = i === stage;
+          
+          return (
+            <div key={i} className="vert-node-group">
+              {/* Node */}
+              <div className={`vert-node ${isInfected ? 'infected' : ''} ${isSource ? 'source' : ''} ${isTarget ? 'target' : ''}`}>
+                {isSource && <div className="vert-pulse-ring" />}
+                {isTarget && <div className="vert-scan-ring" />}
+                {isTarget && showBurst && (
+                  <>
+                    <div className="vert-burst burst-1" />
+                    <div className="vert-burst burst-2" />
+                  </>
+                )}
+                <span className="vert-icon">{node.icon}</span>
+                <span className="vert-label">{node.label}</span>
+              </div>
+              
+              {/* Connection line */}
+              {showConnection && (
+                <div className={`vert-conn ${isActiveConnection ? 'active' : ''} ${i < stage ? 'complete' : ''}`}>
+                  <div className="vert-conn-line" />
+                  {isActiveConnection && (
+                    <div className="vert-packet" style={{ top: `${packetY * 100}%` }}>
+                      <div className="packet-core" />
+                      <div className="packet-trail" />
+                    </div>
+                  )}
+                  {i < stage && (
+                    <div className="vert-data-flow">
+                      <div className="flow-dot dot-1" />
+                      <div className="flow-dot dot-2" />
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
       
       {/* Description */}
-      <p className="mv2-desc">{current.desc}</p>
+      <p className="vert-desc">{stageInfo[stage].desc}</p>
       
-      {/* Progress dots */}
-      <div className="mv2-progress">
-        {stages.map((_, i) => (
-          <div key={i} className={`mv2-dot ${i <= stage ? 'active' : ''} ${i === stage ? 'current' : ''}`} />
+      {/* Progress bar */}
+      <div className="vert-progress">
+        {stageInfo.map((_, i) => (
+          <div key={i} className={`vert-seg ${i < stage ? 'done' : ''} ${i === stage ? 'active' : ''}`} />
         ))}
       </div>
     </div>
