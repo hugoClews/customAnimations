@@ -581,6 +581,173 @@ const stories: Record<string, Story> = {
         transition: "glitch"
       }
     ]
+  },
+
+  phishing: {
+    id: "phishing",
+    title: "Phishing Attack",
+    subtitle: "The Art of Digital Deception",
+    slides: [
+      {
+        type: "morphingShape",
+        title: "PHISHING",
+        subtitle: "Nothing is what it seems",
+        transition: "fade"
+      },
+      {
+        type: "hackerText",
+        content: "91% of cyberattacks start with a <span class='glow-red'>phishing email</span>",
+        subtext: "The human is always the weakest link.",
+        transition: "scale-up"
+      },
+      {
+        type: "morphingShape",
+        title: "DECEPTION",
+        subtitle: "Legitimate on the surface. Malicious underneath.",
+        transition: "fade"
+      },
+      {
+        type: "hackerText",
+        content: "The attacker becomes <span class='glow-green'>someone you trust</span>",
+        subtext: "Your bank. Your boss. Your IT department.",
+        transition: "slide-right"
+      },
+      {
+        type: "dataVisualization",
+        title: "THE THREAT LANDSCAPE",
+        subtitle: "Phishing by the numbers",
+        items: [
+          { value: "3.4B", label: "Phishing emails sent daily" },
+          { value: "36%", label: "Breaches involve phishing" },
+          { value: "$4.9M", label: "Average breach cost" },
+          { value: "22%", label: "Click rate on phishing" }
+        ],
+        transition: "slide-up"
+      },
+      {
+        type: "hackerTitle",
+        title: "ANATOMY_OF",
+        subtitle: "// A phishing attack dissected",
+        transition: "glitch"
+      },
+      {
+        type: "pulseRadar",
+        title: "STEP 1: RECONNAISSANCE",
+        subtitle: "Harvesting targets from LinkedIn, company sites, data leaks",
+        transition: "scale"
+      },
+      {
+        type: "hackerCode",
+        title: "STEP 2: CRAFT THE LURE",
+        transition: "wipe",
+        lines: [
+          { text: "// The perfect phishing email:", type: "comment" },
+          { text: "", type: "normal" },
+          { text: "From: it-support@yourcompany.com", type: "normal" },
+          { text: "Subject: URGENT: Password Expires Today", type: "normal" },
+          { text: "", type: "normal" },
+          { text: "Dear Employee,", type: "normal" },
+          { text: "", type: "normal" },
+          { text: "Your password expires in 2 hours.", type: "normal" },
+          { text: "Click here to reset: [MALICIOUS LINK]", type: "normal" },
+          { text: "", type: "normal" },
+          { text: "// Urgency + Authority = Compliance", type: "comment" }
+        ]
+      },
+      {
+        type: "circuitBoard",
+        title: "STEP 3: INFRASTRUCTURE",
+        subtitle: "Clone the login page. Register lookalike domains.",
+        transition: "wipe"
+      },
+      {
+        type: "hackerTerminal",
+        title: "STEP 4: CREDENTIAL HARVEST",
+        transition: "scale",
+        lines: [
+          { text: "root@phish:~# ", type: "prompt" },
+          { text: "tail -f /var/log/credentials.log", type: "command" },
+          { text: "[+] New victim connected from 192.168.1.50", type: "success", delay: 800 },
+          { text: "[*] Serving fake Office365 login...", type: "output", delay: 600 },
+          { text: "[+] CAPTURED: john.smith@company.com", type: "success", delay: 1000 },
+          { text: "[+] PASSWORD: Summer2024!", type: "success", delay: 400 },
+          { text: "[*] Redirecting to real site...", type: "output", delay: 600 },
+          { text: "[+] Victim suspects nothing.", type: "success", delay: 800 },
+          { text: "", type: "output", delay: 200 },
+          { text: "[+] New victim connected from 10.0.0.23", type: "success", delay: 1200 },
+          { text: "[+] CAPTURED: sarah.jones@company.com", type: "success", delay: 800 }
+        ]
+      },
+      {
+        type: "morphingShape",
+        title: "TRUST EXPLOITED",
+        subtitle: "One click. Total compromise.",
+        transition: "fade"
+      },
+      {
+        type: "threatHeatmap",
+        title: "STEP 5: LATERAL MOVEMENT",
+        subtitle: "Use stolen creds to access email, VPN, cloud services",
+        transition: "fade"
+      },
+      {
+        type: "hackerStats",
+        title: "TIME TO DAMAGE",
+        transition: "slide-up",
+        items: [
+          { value: "1 min", label: "Click to credential theft" },
+          { value: "16 min", label: "First lateral movement" },
+          { value: "1 hour", label: "Domain admin access" },
+          { value: "48 hrs", label: "Full data exfiltration" }
+        ]
+      },
+      {
+        type: "firewallShield",
+        title: "DEFENSE",
+        subtitle: "How to protect yourself and your organization",
+        transition: "scale-up"
+      },
+      {
+        type: "hackerCode",
+        title: "RED FLAGS",
+        transition: "slide-right",
+        lines: [
+          { text: "// Spot the phish:", type: "comment" },
+          { text: "", type: "normal" },
+          { text: "✗ Urgency and pressure tactics", type: "normal" },
+          { text: "✗ Mismatched sender domains", type: "normal" },
+          { text: "✗ Suspicious links (hover first!)", type: "normal" },
+          { text: "✗ Generic greetings", type: "normal" },
+          { text: "✗ Requests for credentials", type: "normal" },
+          { text: "✗ Too good to be true offers", type: "normal" },
+          { text: "", type: "normal" },
+          { text: "// When in doubt, verify out-of-band", type: "comment" }
+        ]
+      },
+      {
+        type: "hackerStats",
+        title: "PROTECTION LAYERS",
+        transition: "scale",
+        items: [
+          { value: "MFA", label: "Multi-factor auth" },
+          { value: "DMARC", label: "Email authentication" },
+          { value: "EDR", label: "Endpoint detection" },
+          { value: "SIEM", label: "Security monitoring" }
+        ]
+      },
+      {
+        type: "morphingShape",
+        title: "STAY VIGILANT",
+        subtitle: "Trust nothing. Verify everything.",
+        transition: "fade"
+      },
+      {
+        type: "hackerTitle",
+        title: "THINK_BEFORE",
+        subtitle: "// YOU CLICK",
+        transition: "glitch"
+      }
+    ]
   }
 };
 
