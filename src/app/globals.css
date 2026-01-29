@@ -3210,3 +3210,263 @@ body {
   pointer-events: none;
   z-index: 100;
 }
+
+/* ===========================================
+   NEW SHOWCASE ANIMATIONS CSS
+   =========================================== */
+
+/* Attack Tree Visualization */
+.attack-tree-viz {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0f;
+  padding: clamp(20px, 4vmin, 40px);
+}
+
+.attack-tree-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.5vmin, 16px);
+  margin-top: clamp(20px, 4vmin, 40px);
+}
+
+.attack-tree-root {
+  background: linear-gradient(135deg, rgba(255, 51, 102, 0.2), rgba(168, 85, 247, 0.2));
+  border: 2px solid #ff3366;
+  border-radius: clamp(8px, 1.5vmin, 16px);
+  padding: clamp(12px, 2.5vmin, 24px) clamp(24px, 5vmin, 48px);
+  font-size: clamp(14px, 2.5vmin, 22px);
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.3;
+  transition: all 0.5s ease;
+}
+
+.attack-tree-root.active {
+  opacity: 1;
+  box-shadow: 0 0 30px rgba(255, 51, 102, 0.4);
+}
+
+.attack-tree-connector {
+  width: 2px;
+  height: clamp(15px, 3vmin, 30px);
+  background: linear-gradient(to bottom, #ff3366, #00f0ff);
+}
+
+.attack-tree-level {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.attack-tree-nodes {
+  display: flex;
+  gap: clamp(8px, 1.5vmin, 16px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.attack-tree-node {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: clamp(6px, 1vmin, 12px);
+  padding: clamp(8px, 1.5vmin, 16px) clamp(12px, 2.5vmin, 24px);
+  font-size: clamp(10px, 1.8vmin, 16px);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.4s ease;
+}
+
+.attack-tree-node.active {
+  color: #00f0ff;
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
+}
+
+.attack-tree-node.current {
+  color: #fff;
+  border-color: #00ff41;
+  background: rgba(0, 255, 65, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+  animation: nodeGlow 1s ease-in-out infinite;
+}
+
+@keyframes nodeGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(0, 255, 65, 0.5); }
+}
+
+/* Matrix Text */
+.matrix-text {
+  color: #00ff41 !important;
+  text-shadow: 0 0 20px #00ff41, 0 0 40px #00ff41 !important;
+}
+
+/* Encryption Visualization */
+.encryption-viz {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0f;
+  padding: clamp(20px, 4vmin, 40px);
+}
+
+.encryption-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(12px, 2vmin, 24px);
+  margin-top: clamp(24px, 5vmin, 48px);
+}
+
+.encryption-label {
+  font-size: clamp(10px, 1.6vmin, 14px);
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.encryption-text {
+  font-family: 'Fira Code', monospace;
+  font-size: clamp(20px, 5vmin, 40px);
+  font-weight: 700;
+  letter-spacing: clamp(4px, 1vmin, 10px);
+  padding: clamp(12px, 2.5vmin, 24px) clamp(24px, 5vmin, 48px);
+  border-radius: clamp(8px, 1.5vmin, 16px);
+}
+
+.encryption-text.plain {
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.encryption-text.cipher {
+  color: #ff3366;
+  background: rgba(255, 51, 102, 0.1);
+  border: 1px solid rgba(255, 51, 102, 0.3);
+  animation: cipherFlicker 0.1s infinite;
+}
+
+@keyframes cipherFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.95; }
+}
+
+.encryption-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 0.8vmin, 8px);
+  font-size: clamp(24px, 5vmin, 40px);
+}
+
+.encryption-key {
+  font-size: clamp(10px, 1.6vmin, 14px);
+  color: #00ff41;
+  font-family: 'Fira Code', monospace;
+  padding: clamp(4px, 0.8vmin, 8px) clamp(12px, 2vmin, 20px);
+  background: rgba(0, 255, 65, 0.1);
+  border-radius: clamp(4px, 0.8vmin, 8px);
+}
+
+/* Timeline Scroll */
+.timeline-scroll {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a0f;
+  padding: clamp(20px, 4vmin, 40px);
+}
+
+.timeline-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vmin, 32px);
+  margin-top: clamp(24px, 5vmin, 48px);
+  padding-left: clamp(30px, 6vmin, 60px);
+  max-width: clamp(300px, 70vmin, 600px);
+}
+
+.timeline-line {
+  position: absolute;
+  left: clamp(10px, 2vmin, 20px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #00f0ff, #ff3366, #a855f7);
+}
+
+.timeline-event {
+  position: relative;
+  opacity: 0.3;
+  transition: all 0.5s ease;
+}
+
+.timeline-event.active {
+  opacity: 1;
+}
+
+.timeline-event.current {
+  transform: translateX(10px);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: calc(-1 * clamp(22px, 4.5vmin, 45px));
+  top: clamp(4px, 0.8vmin, 8px);
+  width: clamp(12px, 2.5vmin, 20px);
+  height: clamp(12px, 2.5vmin, 20px);
+  border-radius: 50%;
+  background: #0a0a0f;
+  border: 2px solid rgba(0, 240, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.timeline-event.active .timeline-dot {
+  background: #00f0ff;
+  border-color: #00f0ff;
+  box-shadow: 0 0 15px #00f0ff;
+}
+
+.timeline-event.current .timeline-dot {
+  background: #00ff41;
+  border-color: #00ff41;
+  box-shadow: 0 0 20px #00ff41;
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vmin, 8px);
+}
+
+.timeline-year {
+  font-size: clamp(12px, 2vmin, 18px);
+  font-weight: 700;
+  color: #00f0ff;
+  font-family: 'Fira Code', monospace;
+}
+
+.timeline-event.current .timeline-year {
+  color: #00ff41;
+}
+
+.timeline-text {
+  font-size: clamp(11px, 1.8vmin, 16px);
+  color: rgba(255, 255, 255, 0.7);
+}

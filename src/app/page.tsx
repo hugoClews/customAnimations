@@ -502,6 +502,79 @@ const stories: Record<string, Story> = {
         transition: "scale"
       },
       {
+        type: "attackTree",
+        title: "ATTACK TREE",
+        subtitle: "Hierarchical threat decomposition",
+        root: "Compromise Target",
+        phases: [
+          ["Reconnaissance", "Initial Access", "Execution"],
+          ["Port Scan", "Phishing", "Exploit", "Malware", "Script"]
+        ],
+        transition: "slide-up"
+      },
+      {
+        type: "trafficFlow",
+        title: "TRAFFIC FLOW",
+        subtitle: "Network packet visualization",
+        transition: "wipe"
+      },
+      {
+        type: "matrixRain",
+        title: "MATRIX RAIN",
+        subtitle: "Digital precipitation",
+        transition: "fade"
+      },
+      {
+        type: "binaryStream",
+        title: "BINARY STREAM",
+        subtitle: "Raw data in motion",
+        transition: "slide-right"
+      },
+      {
+        type: "networkTopology",
+        title: "NETWORK TOPOLOGY",
+        subtitle: "Dynamic infrastructure mapping",
+        transition: "scale"
+      },
+      {
+        type: "firewallShield",
+        title: "FIREWALL SHIELD",
+        subtitle: "Defensive barrier visualization",
+        transition: "scale-up"
+      },
+      {
+        type: "encryptionCipher",
+        title: "ENCRYPTION",
+        subtitle: "Cryptographic transformation",
+        transition: "glitch"
+      },
+      {
+        type: "threatHeatmap",
+        title: "THREAT HEATMAP",
+        subtitle: "Risk intensity visualization",
+        transition: "fade"
+      },
+      {
+        type: "timelineScroll",
+        title: "TIMELINE",
+        subtitle: "Chronological event flow",
+        events: [
+          { year: "00:00", text: "Initial reconnaissance begins" },
+          { year: "01:23", text: "Vulnerability discovered" },
+          { year: "02:45", text: "Exploit payload crafted" },
+          { year: "03:12", text: "Initial access achieved" },
+          { year: "04:30", text: "Lateral movement detected" },
+          { year: "05:55", text: "Data exfiltration complete" }
+        ],
+        transition: "slide-up"
+      },
+      {
+        type: "pulseGrid",
+        title: "PULSE GRID",
+        subtitle: "Wave propagation matrix",
+        transition: "scale"
+      },
+      {
         type: "showcaseTitle",
         title: "END OF",
         subtitle: "SHOWCASE",
@@ -2395,6 +2468,880 @@ function DNAHelix({ title, subtitle }: { title: string; subtitle: string }) {
   );
 }
 
+// Attack Tree Visualization
+function AttackTreeViz({ title, subtitle, root, phases }: { title: string; subtitle: string; root?: string; phases?: string[][] }) {
+  const [activeLevel, setActiveLevel] = useState(-1);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveLevel(l => (l + 1) % ((phases?.length || 0) + 2));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [phases]);
+  
+  return (
+    <div className="showcase-slide attack-tree-viz">
+      <h2 className="showcase-heading">{title}</h2>
+      <p className="showcase-subheading">{subtitle}</p>
+      
+      <div className="attack-tree-container">
+        <div className={`attack-tree-root ${activeLevel >= 0 ? 'active' : ''}`}>
+          {root}
+        </div>
+        
+        <div className="attack-tree-connector" />
+        
+        {phases?.map((phase, pi) => (
+          <div key={pi} className="attack-tree-level">
+            {pi > 0 && <div className="attack-tree-connector" />}
+            <div className="attack-tree-nodes">
+              {phase.map((node, ni) => (
+                <div 
+                  key={ni} 
+                  className={`attack-tree-node ${activeLevel > pi ? 'active' : ''} ${activeLevel === pi + 1 ? 'current' : ''}`}
+                  style={{ animationDelay: `${ni * 0.1}s` }}
+                >
+                  {node}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Traffic Flow Animation
+function TrafficFlow({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    interface Packet {
+      x: number;
+      y: number;
+      targetX: number;
+      targetY: number;
+      speed: number;
+      color: string;
+      size: number;
+      trail: Array<{x: number; y: number}>;
+    }
+    
+    const nodes = [
+      { x: 0.1, y: 0.3, label: 'Client' },
+      { x: 0.3, y: 0.5, label: 'Firewall' },
+      { x: 0.5, y: 0.3, label: 'Load Balancer' },
+      { x: 0.7, y: 0.2, label: 'Server 1' },
+      { x: 0.7, y: 0.5, label: 'Server 2' },
+      { x: 0.7, y: 0.8, label: 'Server 3' },
+      { x: 0.9, y: 0.5, label: 'Database' },
+    ];
+    
+    const connections = [
+      [0, 1], [1, 2], [2, 3], [2, 4], [2, 5], [3, 6], [4, 6], [5, 6]
+    ];
+    
+    const packets: Packet[] = [];
+    const colors = ['#00f0ff', '#00ff41', '#ff3366', '#a855f7', '#ffaa00'];
+    
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.15)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw connections
+      connections.forEach(([from, to]) => {
+        const n1 = nodes[from];
+        const n2 = nodes[to];
+        ctx.beginPath();
+        ctx.moveTo(n1.x * canvas.width, n1.y * canvas.height);
+        ctx.lineTo(n2.x * canvas.width, n2.y * canvas.height);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+      
+      // Draw nodes
+      nodes.forEach(node => {
+        const x = node.x * canvas.width;
+        const y = node.y * canvas.height;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 20, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.1)';
+        ctx.fill();
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(node.label, x, y + 35);
+      });
+      
+      // Spawn packets
+      if (Math.random() < 0.05) {
+        const connIdx = Math.floor(Math.random() * connections.length);
+        const [from, to] = connections[connIdx];
+        const n1 = nodes[from];
+        const n2 = nodes[to];
+        packets.push({
+          x: n1.x * canvas.width,
+          y: n1.y * canvas.height,
+          targetX: n2.x * canvas.width,
+          targetY: n2.y * canvas.height,
+          speed: 2 + Math.random() * 3,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: 4 + Math.random() * 4,
+          trail: []
+        });
+      }
+      
+      // Update and draw packets
+      for (let i = packets.length - 1; i >= 0; i--) {
+        const p = packets[i];
+        
+        // Add to trail
+        p.trail.push({ x: p.x, y: p.y });
+        if (p.trail.length > 10) p.trail.shift();
+        
+        // Move towards target
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < p.speed) {
+          packets.splice(i, 1);
+          continue;
+        }
+        
+        p.x += (dx / dist) * p.speed;
+        p.y += (dy / dist) * p.speed;
+        
+        // Draw trail
+        p.trail.forEach((t, ti) => {
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, p.size * (ti / p.trail.length) * 0.5, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + Math.floor((ti / p.trail.length) * 100).toString(16).padStart(2, '0');
+          ctx.fill();
+        });
+        
+        // Draw packet
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Matrix Rain (standalone showcase version)
+function MatrixRainShowcase({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF<>{}[]';
+    const fontSize = 16;
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops: number[] = Array(columns).fill(1);
+    
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.font = `${fontSize}px monospace`;
+      
+      for (let i = 0; i < drops.length; i++) {
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        const x = i * fontSize;
+        const y = drops[i] * fontSize;
+        
+        // Leading bright character
+        ctx.fillStyle = Math.random() > 0.95 ? '#fff' : '#00ff41';
+        ctx.globalAlpha = Math.random() * 0.5 + 0.5;
+        ctx.fillText(char, x, y);
+        ctx.globalAlpha = 1;
+        
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading matrix-text">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Binary Stream Animation
+function BinaryStream({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const streams: Array<{x: number; chars: string[]; speed: number; color: string}> = [];
+    const streamCount = Math.floor(canvas.width / 30);
+    
+    for (let i = 0; i < streamCount; i++) {
+      const chars = [];
+      for (let j = 0; j < 20; j++) {
+        chars.push(Math.random() > 0.5 ? '1' : '0');
+      }
+      streams.push({
+        x: i * 30 + 15,
+        chars,
+        speed: 1 + Math.random() * 2,
+        color: Math.random() > 0.8 ? '#ff3366' : '#00f0ff'
+      });
+    }
+    
+    let offset = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.font = '14px monospace';
+      
+      streams.forEach(stream => {
+        const baseY = (offset * stream.speed) % (canvas.height + 400) - 200;
+        
+        stream.chars.forEach((char, i) => {
+          const y = baseY + i * 20;
+          if (y < -20 || y > canvas.height + 20) return;
+          
+          const alpha = 1 - (i / stream.chars.length) * 0.7;
+          ctx.fillStyle = stream.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+          ctx.fillText(char, stream.x, y);
+        });
+        
+        // Randomly flip bits
+        if (Math.random() < 0.02) {
+          const idx = Math.floor(Math.random() * stream.chars.length);
+          stream.chars[idx] = stream.chars[idx] === '1' ? '0' : '1';
+        }
+      });
+      
+      offset += 2;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Network Topology Animation
+function NetworkTopology({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const nodes: Array<{x: number; y: number; vx: number; vy: number; type: string; connections: number[]}> = [];
+    const nodeCount = 15;
+    const types = ['router', 'server', 'client', 'firewall'];
+    
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        type: types[Math.floor(Math.random() * types.length)],
+        connections: []
+      });
+    }
+    
+    // Create connections
+    nodes.forEach((node, i) => {
+      const connectionCount = 1 + Math.floor(Math.random() * 3);
+      for (let c = 0; c < connectionCount; c++) {
+        const target = Math.floor(Math.random() * nodeCount);
+        if (target !== i && !node.connections.includes(target)) {
+          node.connections.push(target);
+        }
+      }
+    });
+    
+    const typeColors: Record<string, string> = {
+      router: '#00f0ff',
+      server: '#00ff41',
+      client: '#a855f7',
+      firewall: '#ff3366'
+    };
+    
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update positions
+      nodes.forEach(node => {
+        node.x += node.vx;
+        node.y += node.vy;
+        
+        if (node.x < 50 || node.x > canvas.width - 50) node.vx *= -1;
+        if (node.y < 50 || node.y > canvas.height - 50) node.vy *= -1;
+      });
+      
+      // Draw connections
+      nodes.forEach((node, i) => {
+        node.connections.forEach(targetIdx => {
+          const target = nodes[targetIdx];
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(target.x, target.y);
+          ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        });
+      });
+      
+      // Draw nodes
+      nodes.forEach(node => {
+        const color = typeColors[node.type];
+        
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 12, 0, Math.PI * 2);
+        ctx.fillStyle = color + '30';
+        ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Inner glow
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay bottom">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Firewall Shield Animation
+function FirewallShield({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    
+    interface Threat {
+      angle: number;
+      distance: number;
+      speed: number;
+      blocked: boolean;
+    }
+    
+    const threats: Threat[] = [];
+    let shieldPulse = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const shieldRadius = Math.min(canvas.width, canvas.height) * 0.3;
+      
+      // Draw shield layers
+      for (let i = 3; i >= 0; i--) {
+        const r = shieldRadius * (0.7 + i * 0.1);
+        const pulse = Math.sin(shieldPulse + i * 0.5) * 5;
+        
+        ctx.beginPath();
+        ctx.arc(cx, cy, r + pulse, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 240, 255, ${0.1 + i * 0.1})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      
+      // Hexagonal shield pattern
+      const hexCount = 12;
+      for (let i = 0; i < hexCount; i++) {
+        const angle = (i / hexCount) * Math.PI * 2 + shieldPulse * 0.1;
+        const x = cx + Math.cos(angle) * shieldRadius;
+        const y = cy + Math.sin(angle) * shieldRadius;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#00f0ff';
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      // Spawn threats
+      if (Math.random() < 0.03) {
+        const angle = Math.random() * Math.PI * 2;
+        threats.push({
+          angle,
+          distance: Math.max(canvas.width, canvas.height),
+          speed: 2 + Math.random() * 3,
+          blocked: false
+        });
+      }
+      
+      // Update and draw threats
+      for (let i = threats.length - 1; i >= 0; i--) {
+        const t = threats[i];
+        t.distance -= t.speed;
+        
+        const x = cx + Math.cos(t.angle) * t.distance;
+        const y = cy + Math.sin(t.angle) * t.distance;
+        
+        if (t.distance <= shieldRadius && !t.blocked) {
+          t.blocked = true;
+          // Impact flash
+          ctx.beginPath();
+          ctx.arc(x, y, 20, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 51, 102, 0.5)';
+          ctx.fill();
+        }
+        
+        if (t.blocked) {
+          t.speed *= 0.9;
+          if (t.speed < 0.1) {
+            threats.splice(i, 1);
+            continue;
+          }
+        }
+        
+        ctx.beginPath();
+        ctx.arc(x, y, t.blocked ? 3 : 6, 0, Math.PI * 2);
+        ctx.fillStyle = t.blocked ? '#666' : '#ff3366';
+        ctx.shadowColor = t.blocked ? '#666' : '#ff3366';
+        ctx.shadowBlur = t.blocked ? 0 : 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      // Center icon
+      ctx.fillStyle = '#00ff41';
+      ctx.font = '30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🛡️', cx, cy);
+      
+      shieldPulse += 0.05;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay bottom">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Encryption Cipher Animation
+function EncryptionCipher({ title, subtitle }: { title: string; subtitle: string }) {
+  const [displayText, setDisplayText] = useState('ENCRYPT');
+  const plaintext = 'SECUREMESSAGE';
+  
+  useEffect(() => {
+    let idx = 0;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%';
+    
+    const interval = setInterval(() => {
+      idx = (idx + 1) % (plaintext.length * 3);
+      const phase = Math.floor(idx / plaintext.length);
+      
+      if (phase === 0) {
+        // Encrypting
+        setDisplayText(
+          plaintext.split('').map((c, i) => 
+            i <= idx % plaintext.length 
+              ? chars[Math.floor(Math.random() * chars.length)]
+              : c
+          ).join('')
+        );
+      } else if (phase === 1) {
+        // Encrypted (random)
+        setDisplayText(
+          Array(plaintext.length).fill(0).map(() => 
+            chars[Math.floor(Math.random() * chars.length)]
+          ).join('')
+        );
+      } else {
+        // Decrypting
+        const decryptIdx = idx % plaintext.length;
+        setDisplayText(
+          plaintext.split('').map((c, i) => 
+            i <= decryptIdx ? c : chars[Math.floor(Math.random() * chars.length)]
+          ).join('')
+        );
+      }
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="showcase-slide encryption-viz">
+      <h2 className="showcase-heading">{title}</h2>
+      <p className="showcase-subheading">{subtitle}</p>
+      
+      <div className="encryption-display">
+        <div className="encryption-label">INPUT</div>
+        <div className="encryption-text plain">{plaintext}</div>
+        
+        <div className="encryption-arrow">
+          <span>🔐</span>
+          <div className="encryption-key">AES-256</div>
+        </div>
+        
+        <div className="encryption-label">OUTPUT</div>
+        <div className="encryption-text cipher">{displayText}</div>
+      </div>
+    </div>
+  );
+}
+
+// Threat Heatmap Animation
+function ThreatHeatmap({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const gridX = 20;
+    const gridY = 12;
+    const cells: number[][] = [];
+    
+    for (let y = 0; y < gridY; y++) {
+      cells[y] = [];
+      for (let x = 0; x < gridX; x++) {
+        cells[y][x] = Math.random() * 0.3;
+      }
+    }
+    
+    let animationId: number;
+    
+    const animate = () => {
+      const cellW = canvas.width / gridX;
+      const cellH = canvas.height / gridY;
+      
+      // Update cells
+      for (let y = 0; y < gridY; y++) {
+        for (let x = 0; x < gridX; x++) {
+          // Random fluctuation
+          cells[y][x] += (Math.random() - 0.5) * 0.05;
+          cells[y][x] = Math.max(0, Math.min(1, cells[y][x]));
+          
+          // Occasional spike
+          if (Math.random() < 0.001) {
+            cells[y][x] = 0.8 + Math.random() * 0.2;
+          }
+          
+          // Decay
+          cells[y][x] *= 0.995;
+        }
+      }
+      
+      // Draw cells
+      for (let y = 0; y < gridY; y++) {
+        for (let x = 0; x < gridX; x++) {
+          const intensity = cells[y][x];
+          
+          // Color gradient: blue -> green -> yellow -> red
+          let r, g, b;
+          if (intensity < 0.33) {
+            r = 0;
+            g = Math.floor(intensity * 3 * 255);
+            b = Math.floor((1 - intensity * 3) * 255);
+          } else if (intensity < 0.66) {
+            const t = (intensity - 0.33) * 3;
+            r = Math.floor(t * 255);
+            g = 255;
+            b = 0;
+          } else {
+            const t = (intensity - 0.66) * 3;
+            r = 255;
+            g = Math.floor((1 - t) * 255);
+            b = 0;
+          }
+          
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillRect(x * cellW, y * cellH, cellW - 1, cellH - 1);
+        }
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Timeline Scroll Animation
+function TimelineScroll({ title, subtitle, events }: { title: string; subtitle: string; events?: Array<{year: string; text: string}> }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex(i => (i + 1) % (events?.length || 1));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [events]);
+  
+  return (
+    <div className="showcase-slide timeline-scroll">
+      <h2 className="showcase-heading">{title}</h2>
+      <p className="showcase-subheading">{subtitle}</p>
+      
+      <div className="timeline-container">
+        <div className="timeline-line" />
+        {events?.map((event, i) => (
+          <div 
+            key={i} 
+            className={`timeline-event ${i <= activeIndex ? 'active' : ''} ${i === activeIndex ? 'current' : ''}`}
+          >
+            <div className="timeline-dot" />
+            <div className="timeline-content">
+              <span className="timeline-year">{event.year}</span>
+              <span className="timeline-text">{event.text}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Pulse Grid Animation
+function PulseGrid({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const gridSize = 40;
+    const cols = Math.ceil(canvas.width / gridSize);
+    const rows = Math.ceil(canvas.height / gridSize);
+    
+    interface Pulse {
+      x: number;
+      y: number;
+      radius: number;
+      maxRadius: number;
+      color: string;
+    }
+    
+    const pulses: Pulse[] = [];
+    const colors = ['#00f0ff', '#ff3366', '#00ff41', '#a855f7'];
+    
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw grid
+      for (let x = 0; x <= cols; x++) {
+        for (let y = 0; y <= rows; y++) {
+          const px = x * gridSize;
+          const py = y * gridSize;
+          
+          // Check pulse influence
+          let brightness = 0.1;
+          pulses.forEach(pulse => {
+            const dist = Math.sqrt((px - pulse.x) ** 2 + (py - pulse.y) ** 2);
+            if (dist < pulse.radius && dist > pulse.radius - 30) {
+              brightness = Math.max(brightness, 1 - (pulse.radius - dist) / 30);
+            }
+          });
+          
+          ctx.beginPath();
+          ctx.arc(px, py, 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0, 240, 255, ${brightness})`;
+          ctx.fill();
+        }
+      }
+      
+      // Spawn pulses
+      if (Math.random() < 0.02) {
+        pulses.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: 0,
+          maxRadius: 200 + Math.random() * 200,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+      
+      // Update pulses
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.radius += 3;
+        
+        // Draw pulse ring
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = p.color + Math.floor((1 - p.radius / p.maxRadius) * 150).toString(16).padStart(2, '0');
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        if (p.radius > p.maxRadius) {
+          pulses.splice(i, 1);
+        }
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
 // Particle Network Background Component
 function ParticleNetwork() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -2862,6 +3809,76 @@ export default function Home() {
         return (
           <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <DNAHelix title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "attackTree":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <AttackTreeViz title={slide.title || ""} subtitle={slide.subtitle || ""} root={slide.root} phases={slide.phases} />
+          </div>
+        );
+
+      case "trafficFlow":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <TrafficFlow title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "matrixRain":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <MatrixRainShowcase title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "binaryStream":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <BinaryStream title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "networkTopology":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <NetworkTopology title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "firewallShield":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <FirewallShield title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "encryptionCipher":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <EncryptionCipher title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "threatHeatmap":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <ThreatHeatmap title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "timelineScroll":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <TimelineScroll title={slide.title || ""} subtitle={slide.subtitle || ""} events={slide.events} />
+          </div>
+        );
+
+      case "pulseGrid":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <PulseGrid title={slide.title || ""} subtitle={slide.subtitle || ""} />
           </div>
         );
 
