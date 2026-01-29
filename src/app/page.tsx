@@ -66,6 +66,7 @@ interface Slide {
   stage?: number;
   mapType?: string;
   terminals?: TerminalConfig[];
+  transition?: 'fade' | 'slide-right' | 'slide-left' | 'slide-up' | 'scale' | 'scale-up' | 'glitch' | 'wipe';
 }
 
 interface Story {
@@ -85,34 +86,39 @@ const stories: Record<string, Story> = {
       {
         type: "hackerTitle",
         title: "REVERSE_SHELL",
-        subtitle: "// How hackers bypass your firewall"
+        subtitle: "// How hackers bypass your firewall",
+        transition: "glitch"
       },
       {
         type: "hackerText",
         content: "What if the <span class='glow-red'>victim</span> connects to <span class='glow-green'>you</span>?",
-        subtext: "The attacker never touches the firewall."
+        subtext: "The attacker never touches the firewall.",
+        transition: "fade"
       },
       {
         type: "hackerText",
         content: "Firewalls block <span class='glow-red'>INBOUND</span>",
-        subtext: "But outbound? That's usually trusted..."
+        subtext: "But outbound? That's usually trusted...",
+        transition: "slide-right"
       },
       {
         type: "hackerText",
         content: "<span class='glow-green'>REVERSE SHELL</span>",
-        subtext: "Target initiates. Firewall allows. Attacker wins."
+        subtext: "Target initiates. Firewall allows. Attacker wins.",
+        transition: "scale-up"
       },
-      { type: "hackerStage", stage: 0 },
-      { type: "hackerStage", stage: 1 },
-      { type: "hackerStage", stage: 2 },
-      { type: "hackerStage", stage: 3 },
-      { type: "hackerStage", stage: 4 },
-      { type: "hackerStage", stage: 5 },
-      { type: "hackerStage", stage: 6 },
-      { type: "hackerStage", stage: 7 },
+      { type: "hackerStage", stage: 0, transition: "wipe" },
+      { type: "hackerStage", stage: 1, transition: "slide-right" },
+      { type: "hackerStage", stage: 2, transition: "slide-right" },
+      { type: "hackerStage", stage: 3, transition: "slide-right" },
+      { type: "hackerStage", stage: 4, transition: "glitch" },
+      { type: "hackerStage", stage: 5, transition: "slide-left" },
+      { type: "hackerStage", stage: 6, transition: "scale" },
+      { type: "hackerStage", stage: 7, transition: "glitch" },
       {
         type: "hackerTerminal",
-        title: "ATTACKER TERMINAL",
+        title: "LIVE ATTACK",
+        transition: "scale",
         lines: [
           { text: "root@kali:~# ", type: "prompt" },
           { text: "listener --port 4444", type: "command" },
@@ -133,6 +139,8 @@ const stories: Record<string, Story> = {
       },
       {
         type: "hackerStats",
+        title: "COMMON PORTS",
+        transition: "slide-up",
         items: [
           { value: "4444", label: "Classic Port" },
           { value: "443", label: "Looks like HTTPS" },
@@ -143,6 +151,7 @@ const stories: Record<string, Story> = {
       {
         type: "hackerCode",
         title: "THE MECHANISM",
+        transition: "wipe",
         lines: [
           { text: "// What happens on the victim:", type: "comment" },
           { text: "", type: "normal" },
@@ -158,12 +167,14 @@ const stories: Record<string, Story> = {
       {
         type: "hackerText",
         content: "<span class='glow-amber'>DEFENSE</span>",
-        subtext: "Monitor outbound connections. Egress filtering. EDR."
+        subtext: "Monitor outbound connections. Egress filtering. EDR.",
+        transition: "fade"
       },
       {
         type: "hackerTitle",
         title: "ACCESS_GRANTED",
-        subtitle: "// Victim connects out • Firewall bypassed • Game over"
+        subtitle: "// Victim connects out • Firewall bypassed • Game over",
+        transition: "glitch"
       }
     ]
   },
@@ -1385,13 +1396,44 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentSlide, goToSlide]);
 
+  const getTransitionClass = (slide: Slide) => {
+    if (slide.transition) {
+      return `transition-${slide.transition}`;
+    }
+    // Default transitions based on slide type
+    switch (slide.type) {
+      case 'title':
+      case 'hackerTitle':
+        return 'transition-scale';
+      case 'bigNumber':
+        return 'transition-scale-up';
+      case 'stats':
+      case 'hackerStats':
+        return 'transition-slide-up';
+      case 'code':
+      case 'hackerCode':
+        return 'transition-wipe';
+      case 'terminal':
+      case 'hackerTerminal':
+        return 'transition-scale';
+      case 'attackFlow':
+      case 'reverseShellFlow':
+      case 'hackerStage':
+        return 'transition-slide-right';
+      default:
+        return 'transition-fade';
+    }
+  };
+
   const renderSlide = (slide: Slide, index: number) => {
     if (index !== currentSlide) return null;
+    
+    const transitionClass = getTransitionClass(slide);
 
     switch (slide.type) {
       case "title":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <h1 className="slide-title">{slide.title}</h1>
             <p className="slide-subtitle">{slide.subtitle}</p>
           </div>
@@ -1399,7 +1441,7 @@ export default function Home() {
 
       case "text":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <p className="slide-text" dangerouslySetInnerHTML={{ __html: slide.content || "" }} />
             {slide.subtext && <p className="slide-subtitle mt-5">{slide.subtext}</p>}
           </div>
@@ -1407,7 +1449,7 @@ export default function Home() {
 
       case "bigNumber":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <div className="big-number">{slide.number}</div>
             <p className="big-label">{slide.label}</p>
           </div>
@@ -1415,7 +1457,7 @@ export default function Home() {
 
       case "stats":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <div className="stat-grid">
               {slide.items?.map((item, i) => (
                 <div key={i} className="stat-card" style={{ animationDelay: `${i * 0.15}s` }}>
@@ -1429,7 +1471,7 @@ export default function Home() {
 
       case "attackTree":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <div className="attack-tree">
               <div className="tree-level">
                 <div className="tree-node root">{slide.root}</div>
@@ -1456,7 +1498,7 @@ export default function Home() {
 
       case "network":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <h2 className="slide-subtitle mb-6">{slide.title}</h2>
             <div className="flow-diagram">
               {slide.nodes?.map((node, i) => (
@@ -1475,14 +1517,14 @@ export default function Home() {
 
       case "attackFlow":
         return (
-          <div className="slide-content attack-flow-slide" key={animationKey}>
+          <div className={`slide-content attack-flow-slide ${transitionClass}`} key={animationKey}>
             <AttackStage stage={slide.stage || 0} isMobile={ratio === "9:16"} isCompact={ratio === "16:9" && isSmallViewport} />
           </div>
         );
 
       case "timeline":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <h2 className="slide-subtitle mb-6">{slide.title}</h2>
             <div className="timeline">
               {slide.events?.map((event, i) => (
@@ -1501,7 +1543,7 @@ export default function Home() {
 
       case "code":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <h2 className="slide-subtitle mb-5">{slide.title}</h2>
             <div className="code-block">
               {slide.lines?.map((line, i) => (
@@ -1523,21 +1565,21 @@ export default function Home() {
 
       case "map":
         return (
-          <div className="slide-content" key={animationKey}>
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
             <MapSlide slide={slide} />
           </div>
         );
 
       case "terminal":
         return (
-          <div className="slide-content terminal-content" key={animationKey}>
+          <div className={`slide-content terminal-content ${transitionClass}`} key={animationKey}>
             <TerminalSlide slide={slide} />
           </div>
         );
 
       case "reverseShellFlow":
         return (
-          <div className="slide-content attack-flow-slide" key={animationKey}>
+          <div className={`slide-content attack-flow-slide ${transitionClass}`} key={animationKey}>
             <ReverseShellFlow stage={slide.stage || 0} isMobile={ratio === "9:16"} />
           </div>
         );
@@ -1545,7 +1587,7 @@ export default function Home() {
       // Hacker theme slide types
       case "hackerTitle":
         return (
-          <div className="slide-content hacker-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide ${transitionClass}`} key={animationKey}>
             <GlitchText className="hacker-title">{slide.title}</GlitchText>
             <p className="hacker-subtitle">{slide.subtitle}</p>
           </div>
@@ -1553,7 +1595,7 @@ export default function Home() {
 
       case "hackerText":
         return (
-          <div className="slide-content hacker-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide ${transitionClass}`} key={animationKey}>
             <p className="hacker-text" dangerouslySetInnerHTML={{ __html: slide.content || "" }} />
             {slide.subtext && <p className="hacker-subtext">{slide.subtext}</p>}
           </div>
@@ -1561,14 +1603,14 @@ export default function Home() {
 
       case "hackerStage":
         return (
-          <div className="slide-content hacker-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide ${transitionClass}`} key={animationKey}>
             <ReverseShellStages stage={slide.stage || 0} />
           </div>
         );
 
       case "hackerTerminal":
         return (
-          <div className="slide-content hacker-slide terminal-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide terminal-slide ${transitionClass}`} key={animationKey}>
             <HackerTerminal 
               title={slide.title || "TERMINAL"} 
               lines={slide.lines?.map(l => ({ text: l.text, type: l.type, delay: 0 })) || []}
@@ -1579,7 +1621,7 @@ export default function Home() {
 
       case "hackerStats":
         return (
-          <div className="slide-content hacker-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide ${transitionClass}`} key={animationKey}>
             <div className="hacker-stats">
               {slide.items?.map((item, i) => (
                 <div key={i} className="hacker-stat" style={{ animationDelay: `${i * 0.1}s` }}>
@@ -1593,7 +1635,7 @@ export default function Home() {
 
       case "hackerCode":
         return (
-          <div className="slide-content hacker-slide" key={animationKey}>
+          <div className={`slide-content hacker-slide ${transitionClass}`} key={animationKey}>
             <h2 className="hacker-code-title">{slide.title}</h2>
             <div className="hacker-code-block">
               {slide.lines?.map((line, i) => (
