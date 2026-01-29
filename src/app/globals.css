@@ -197,6 +197,59 @@ body {
   filter: drop-shadow(0 0 4px var(--accent2));
 }
 
+/* Lottie packet container */
+.attack-packet-lottie {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.attack-packet-fallback {
+  width: clamp(20px, 4vmin, 40px);
+  height: clamp(20px, 4vmin, 40px);
+  background: var(--accent2);
+  border-radius: 50%;
+  box-shadow: 0 0 20px var(--accent2), 0 0 40px var(--accent2);
+  animation: packetPulse 1.5s ease infinite;
+}
+
+@keyframes packetPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Curved path styles */
+.attack-path-curve {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: clamp(1px, 0.4vmin, 3px);
+  transition: all 0.5s ease;
+}
+
+.attack-path-curve.active {
+  stroke: rgba(0, 240, 255, 0.5);
+  stroke-width: clamp(1.5px, 0.5vmin, 4px);
+}
+
+.attack-path-curve.current {
+  stroke: url(#pathGradActive);
+  stroke-width: clamp(2px, 0.6vmin, 5px);
+  filter: url(#glow);
+}
+
+.attack-path-animated {
+  stroke: var(--accent2);
+  stroke-width: clamp(2px, 0.5vmin, 4px);
+  stroke-dasharray: 8 4;
+  animation: dashMove 0.8s linear infinite;
+  filter: drop-shadow(0 0 4px var(--accent2));
+}
+
+@keyframes dashMove {
+  to { stroke-dashoffset: -24; }
+}
+
+/* Legacy packet (kept for backwards compatibility) */
 .attack-packet {
   position: absolute;
   top: 0;
@@ -207,10 +260,10 @@ body {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 20px var(--accent2), 0 0 40px var(--accent2);
   z-index: 10;
-  animation: packetPulse 1.5s ease infinite;
+  animation: packetPulseLegacy 1.5s ease infinite;
 }
 
-@keyframes packetPulse {
+@keyframes packetPulseLegacy {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
   50% { transform: translate(-50%, -50%) scale(1.2); }
 }
@@ -291,6 +344,106 @@ body {
 }
 
 /* ===========================================
+   SVG-based attack nodes
+   =========================================== */
+.attack-node-svg {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 1vmin, 10px);
+  opacity: 0.4;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.attack-node-svg.infected {
+  opacity: 1;
+}
+
+.attack-node-svg.target {
+  opacity: 0.75;
+  animation: targetPulseSvg 2s ease-in-out infinite;
+}
+
+.attack-node-svg.source {
+  opacity: 1;
+  animation: sourcePulseSvg 2s ease-in-out infinite;
+}
+
+@keyframes targetPulseSvg {
+  0%, 100% { 
+    opacity: 0.6; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% { 
+    opacity: 0.9; 
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+@keyframes sourcePulseSvg {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+.attack-node-icon-wrapper {
+  transition: all 0.4s ease;
+}
+
+.attack-node-icon-wrapper svg {
+  width: clamp(32px, 6vmin, 56px);
+  height: clamp(32px, 6vmin, 56px);
+}
+
+.attack-node-svg:not(.infected) .attack-node-icon-wrapper {
+  filter: grayscale(0.8) opacity(0.6);
+}
+
+.attack-node-svg.target .attack-node-icon-wrapper {
+  filter: grayscale(0.3) brightness(1.1);
+}
+
+.attack-node-svg.source .attack-node-icon-wrapper {
+  filter: brightness(1.2);
+}
+
+.attack-node-svg .attack-node-label {
+  font-size: clamp(7px, 1.3vmin, 12px);
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.7);
+  padding: clamp(3px, 0.6vmin, 7px) clamp(6px, 1.2vmin, 12px);
+  border-radius: clamp(3px, 0.6vmin, 8px);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.attack-node-svg.infected .attack-node-label {
+  color: var(--accent2);
+  border-color: rgba(255, 51, 102, 0.3);
+}
+
+.attack-node-svg.target .attack-node-label {
+  color: var(--accent);
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.attack-node-svg.source .attack-node-label {
+  color: var(--accent2);
+  border-color: var(--accent2);
+  box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+/* ===========================================
    MOBILE ATTACK FLOW (9:16) - Card-based design
    All sizes relative for scaling
    =========================================== */
@@ -366,6 +519,38 @@ body {
   50% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.5); }
 }
 
+/* Mobile SVG icon styles */
+.mobile-node-icon-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-node-icon-svg svg {
+  width: clamp(40px, 12vmin, 70px);
+  height: clamp(40px, 12vmin, 70px);
+}
+
+.mobile-node.source .mobile-node-icon-svg {
+  animation: mobileIconPulse 2.5s ease-in-out infinite;
+}
+
+.mobile-node.target .mobile-node-icon-svg {
+  animation: mobileTargetIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes mobileTargetIconPulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+}
+
+/* Legacy mobile icon (emoji) */
 .mobile-node-icon {
   font-size: clamp(24px, 7vmin, 48px);
   filter: drop-shadow(0 0 8px currentColor);
@@ -400,6 +585,26 @@ body {
   width: clamp(2px, 0.4vmin, 3px);
   height: 100%;
   background: linear-gradient(to bottom, var(--accent2), var(--accent));
+}
+
+/* Lottie animation container for mobile arrow */
+.mobile-arrow-lottie {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: mobileArrowFloat 2s ease-in-out infinite;
+}
+
+@keyframes mobileArrowFloat {
+  0%, 100% { 
+    top: 30%;
+    opacity: 1;
+  }
+  50% { 
+    top: 70%;
+    opacity: 0.7;
+  }
 }
 
 .mobile-arrow-pulse {
@@ -1105,15 +1310,29 @@ body {
   opacity: 0.9;
 }
 
-.compact-icon {
-  font-size: clamp(28px, 8vmin, 50px);
-  filter: drop-shadow(0 0 10px var(--accent2));
+/* Compact SVG icon container */
+.compact-icon-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: compactPulse 2s ease-in-out infinite;
+}
+
+.compact-icon-svg svg {
+  width: clamp(48px, 12vmin, 80px);
+  height: clamp(48px, 12vmin, 80px);
 }
 
 @keyframes compactPulse {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  50% { transform: scale(1.08); }
+}
+
+/* Legacy compact emoji icon */
+.compact-icon {
+  font-size: clamp(28px, 8vmin, 50px);
+  filter: drop-shadow(0 0 10px var(--accent2));
+  animation: compactPulse 2s ease-in-out infinite;
 }
 
 .compact-title {

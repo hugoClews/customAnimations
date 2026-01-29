@@ -1,9 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import type L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { USBIcon, LaptopIcon, NetworkIcon, SCADAIcon, PLCIcon, CentrifugeIcon } from "@/components/StageIcons";
+
+// Dynamically import Lottie to avoid SSR issues
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+// Icon component mapping for attack stages
+const IconComponents: Record<string, React.ComponentType<{ size?: number; infected?: boolean; className?: string }>> = {
+  usb: USBIcon,
+  laptop: LaptopIcon,
+  network: NetworkIcon,
+  scada: SCADAIcon,
+  plc: PLCIcon,
+  centrifuge: CentrifugeIcon,
+};
 
 // Story data type definitions
 interface StatItem {
@@ -600,17 +614,28 @@ function MapSlide({ slide }: { slide: Slide }) {
   );
 }
 
-// Mobile Attack Stage - Card-based vertical flow
+// Mobile Attack Stage - Card-based vertical flow with custom SVGs
 function MobileAttackStage({ stage }: { stage: number }) {
-  const stages = [
-    { icon: '💾', from: 'USB Drive', to: '💻', toLabel: 'Engineer PC', title: 'USB INSERTION', desc: 'Infected USB planted by contractor' },
-    { icon: '💻', from: 'Engineer PC', to: '🌐', toLabel: 'Air-Gapped Network', title: 'INITIAL INFECTION', desc: 'Worm exploits Windows zero-days' },
-    { icon: '🌐', from: 'Network', to: '🖥️', toLabel: 'SCADA System', title: 'NETWORK SPREAD', desc: 'Propagates through shared drives' },
-    { icon: '🖥️', from: 'SCADA', to: '⚙️', toLabel: 'Siemens PLC', title: 'SCADA COMPROMISE', desc: 'Targets WinCC/Step 7 software' },
-    { icon: '⚙️', from: 'PLC', to: '☢️', toLabel: 'Centrifuges', title: 'PAYLOAD DELIVERY', desc: 'Injects malicious code into PLCs' },
-  ];
+  const [lottieData, setLottieData] = useState<object | null>(null);
+  
+  useEffect(() => {
+    fetch('/animations/data-packet.json')
+      .then(res => res.json())
+      .then(data => setLottieData(data))
+      .catch(() => {});
+  }, []);
+  
+  const stages = useMemo(() => [
+    { iconType: 'usb', from: 'USB Drive', toIcon: 'laptop', toLabel: 'Engineer PC', title: 'USB INSERTION', desc: 'Infected USB planted by contractor' },
+    { iconType: 'laptop', from: 'Engineer PC', toIcon: 'network', toLabel: 'Air-Gapped Network', title: 'INITIAL INFECTION', desc: 'Worm exploits Windows zero-days' },
+    { iconType: 'network', from: 'Network', toIcon: 'scada', toLabel: 'SCADA System', title: 'NETWORK SPREAD', desc: 'Propagates through shared drives' },
+    { iconType: 'scada', from: 'SCADA', toIcon: 'plc', toLabel: 'Siemens PLC', title: 'SCADA COMPROMISE', desc: 'Targets WinCC/Step 7 software' },
+    { iconType: 'plc', from: 'PLC', toIcon: 'centrifuge', toLabel: 'Centrifuges', title: 'PAYLOAD DELIVERY', desc: 'Injects malicious code into PLCs' },
+  ], []);
   
   const current = stages[stage];
+  const SourceIcon = IconComponents[current.iconType];
+  const TargetIcon = IconComponents[current.toIcon];
   
   return (
     <div className="mobile-attack">
@@ -621,18 +646,32 @@ function MobileAttackStage({ stage }: { stage: number }) {
       
       <div className="mobile-attack-visual">
         <div className="mobile-node source">
-          <span className="mobile-node-icon">{current.icon}</span>
+          <div className="mobile-node-icon-svg">
+            {SourceIcon && <SourceIcon size={56} infected={true} />}
+          </div>
           <span className="mobile-node-label">{current.from}</span>
         </div>
         
         <div className="mobile-arrow">
           <div className="mobile-arrow-line" />
-          <div className="mobile-arrow-pulse" />
+          <div className="mobile-arrow-lottie">
+            {lottieData ? (
+              <Lottie 
+                animationData={lottieData} 
+                loop 
+                style={{ width: 32, height: 32 }}
+              />
+            ) : (
+              <div className="mobile-arrow-pulse" />
+            )}
+          </div>
           <span className="mobile-arrow-icon">▼</span>
         </div>
         
         <div className="mobile-node target">
-          <span className="mobile-node-icon">{current.to}</span>
+          <div className="mobile-node-icon-svg">
+            {TargetIcon && <TargetIcon size={56} infected={false} />}
+          </div>
           <span className="mobile-node-label">{current.toLabel}</span>
         </div>
       </div>
@@ -648,45 +687,77 @@ function MobileAttackStage({ stage }: { stage: number }) {
   );
 }
 
-// Desktop Attack Stage - Network diagram with packet animation
+// Desktop Attack Stage - Network diagram with Lottie packet animation
 function DesktopAttackStage({ stage }: { stage: number }) {
   const [packetProgress, setPacketProgress] = useState(0);
+  const [lottieData, setLottieData] = useState<object | null>(null);
   const prevStageRef = useRef(stage);
+  const animationRef = useRef<HTMLDivElement>(null);
+  
+  // Load Lottie animation data
+  useEffect(() => {
+    fetch('/animations/data-packet.json')
+      .then(res => res.json())
+      .then(data => setLottieData(data))
+      .catch(() => console.log('Lottie animation not loaded'));
+  }, []);
   
   useEffect(() => {
     if (prevStageRef.current !== stage) {
       setPacketProgress(0);
       prevStageRef.current = stage;
     }
-    const interval = setInterval(() => {
-      setPacketProgress(p => Math.min(1, p + 0.015));
-    }, 30);
-    return () => clearInterval(interval);
+    // Eased animation progress using requestAnimationFrame
+    let startTime: number | null = null;
+    const duration = 2500; // 2.5 seconds for smoother animation
+    
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-in-out cubic for smooth movement
+      const eased = progress < 0.5 
+        ? 4 * progress * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      setPacketProgress(eased);
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    const animId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animId);
   }, [stage]);
   
-  const nodes = [
-    { id: 'usb', label: 'USB Drive', x: 6, y: 70, icon: '💾' },
-    { id: 'laptop', label: 'Engineer PC', x: 23, y: 30, icon: '💻' },
-    { id: 'network', label: 'Air-Gapped', x: 41, y: 70, icon: '🌐' },
-    { id: 'scada', label: 'SCADA', x: 59, y: 30, icon: '🖥️' },
-    { id: 'plc', label: 'PLC', x: 77, y: 70, icon: '⚙️' },
-    { id: 'centrifuge', label: 'Centrifuges', x: 94, y: 30, icon: '☢️' },
-  ];
+  const nodes = useMemo(() => [
+    { id: 'usb', label: 'USB Drive', x: 6, y: 70, iconType: 'usb' },
+    { id: 'laptop', label: 'Engineer PC', x: 23, y: 30, iconType: 'laptop' },
+    { id: 'network', label: 'Air-Gapped', x: 41, y: 70, iconType: 'network' },
+    { id: 'scada', label: 'SCADA', x: 59, y: 30, iconType: 'scada' },
+    { id: 'plc', label: 'PLC', x: 77, y: 70, iconType: 'plc' },
+    { id: 'centrifuge', label: 'Centrifuges', x: 94, y: 30, iconType: 'centrifuge' },
+  ], []);
   
-  const stageInfo = [
+  const stageInfo = useMemo(() => [
     { title: "USB INSERTION", desc: "Infected USB planted by contractor", from: 0, to: 1 },
     { title: "INITIAL INFECTION", desc: "Worm exploits Windows zero-days", from: 1, to: 2 },
     { title: "NETWORK SPREAD", desc: "Propagates through shared drives", from: 2, to: 3 },
     { title: "SCADA COMPROMISE", desc: "Targets WinCC/Step 7 software", from: 3, to: 4 },
     { title: "PAYLOAD DELIVERY", desc: "Injects malicious code into PLCs", from: 4, to: 5 },
-  ];
+  ], []);
   
   const currentStage = stageInfo[stage] || stageInfo[0];
   const fromNode = nodes[currentStage.from];
   const toNode = nodes[currentStage.to];
   
-  const packetX = fromNode.x + (toNode.x - fromNode.x) * packetProgress;
-  const packetY = fromNode.y + (toNode.y - fromNode.y) * packetProgress;
+  // Calculate packet position with bezier curve for more natural movement
+  const midX = (fromNode.x + toNode.x) / 2;
+  const midY = Math.min(fromNode.y, toNode.y) - 15; // Arc above the direct line
+  
+  // Quadratic bezier interpolation
+  const t = packetProgress;
+  const packetX = (1-t)*(1-t)*fromNode.x + 2*(1-t)*t*midX + t*t*toNode.x;
+  const packetY = (1-t)*(1-t)*fromNode.y + 2*(1-t)*t*midY + t*t*toNode.y;
   
   return (
     <div className="attack-flow">
@@ -698,45 +769,85 @@ function DesktopAttackStage({ stage }: { stage: number }) {
       
       <div className="attack-diagram">
         <svg className="attack-paths" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="pathGradActive" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ff3366" stopOpacity="0.6" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
           {nodes.slice(0, -1).map((node, i) => {
             const next = nodes[i + 1];
             const isActive = i <= stage;
             const isCurrent = i === stage;
+            const midPtX = (node.x + next.x) / 2;
+            const midPtY = Math.min(node.y, next.y) - 15;
             return (
-              <line
-                key={i}
-                x1={node.x}
-                y1={node.y}
-                x2={next.x}
-                y2={next.y}
-                className={`attack-path-line ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''}`}
-              />
+              <g key={i}>
+                {/* Curved path using quadratic bezier */}
+                <path
+                  d={`M ${node.x} ${node.y} Q ${midPtX} ${midPtY} ${next.x} ${next.y}`}
+                  className={`attack-path-curve ${isActive ? 'active' : ''} ${isCurrent ? 'current' : ''}`}
+                  fill="none"
+                />
+                {/* Animated dash for current path */}
+                {isCurrent && (
+                  <path
+                    d={`M ${node.x} ${node.y} Q ${midPtX} ${midPtY} ${next.x} ${next.y}`}
+                    className="attack-path-animated"
+                    fill="none"
+                  />
+                )}
+              </g>
             );
           })}
         </svg>
         
+        {/* Lottie animated packet */}
         <div
-          className="attack-packet"
+          ref={animationRef}
+          className="attack-packet-lottie"
           style={{
             left: `${packetX}%`,
             top: `${packetY}%`,
+            transform: 'translate(-50%, -50%)',
+            opacity: packetProgress > 0 && packetProgress < 1 ? 1 : 0.5,
           }}
-        />
+        >
+          {lottieData ? (
+            <Lottie 
+              animationData={lottieData} 
+              loop 
+              style={{ width: 'clamp(24px, 5vmin, 50px)', height: 'clamp(24px, 5vmin, 50px)' }}
+            />
+          ) : (
+            <div className="attack-packet-fallback" />
+          )}
+        </div>
         
         {nodes.map((node, i) => {
           const isInfected = i <= stage;
           const isTarget = i === stage + 1;
           const isSource = i === stage;
+          const IconComponent = IconComponents[node.iconType];
           return (
             <div
               key={node.id}
-              className={`attack-node ${isInfected ? 'infected' : ''} ${isTarget ? 'target' : ''} ${isSource ? 'source' : ''}`}
+              className={`attack-node-svg ${isInfected ? 'infected' : ''} ${isTarget ? 'target' : ''} ${isSource ? 'source' : ''}`}
               style={{
                 left: `${node.x}%`,
                 top: `${node.y}%`,
               }}
             >
-              <span className="attack-node-icon">{node.icon}</span>
+              <div className="attack-node-icon-wrapper">
+                {IconComponent && <IconComponent size={48} infected={isInfected} />}
+              </div>
               <span className="attack-node-label">{node.label}</span>
             </div>
           );
@@ -981,22 +1092,25 @@ function ReverseShellFlow({ stage, isMobile = false }: { stage: number; isMobile
   );
 }
 
-// Compact Attack Stage for small 16:9 viewports
+// Compact Attack Stage for small 16:9 viewports with custom SVGs
 function CompactAttackStage({ stage }: { stage: number }) {
-  const stages = [
-    { icon: '💾', label: 'USB → PC', title: 'USB INSERTION' },
-    { icon: '💻', label: 'PC → Network', title: 'INITIAL INFECTION' },
-    { icon: '🌐', label: 'Network → SCADA', title: 'NETWORK SPREAD' },
-    { icon: '🖥️', label: 'SCADA → PLC', title: 'SCADA COMPROMISE' },
-    { icon: '⚙️', label: 'PLC → Target', title: 'PAYLOAD DELIVERY' },
-  ];
+  const stages = useMemo(() => [
+    { iconType: 'usb', label: 'USB → PC', title: 'USB INSERTION' },
+    { iconType: 'laptop', label: 'PC → Network', title: 'INITIAL INFECTION' },
+    { iconType: 'network', label: 'Network → SCADA', title: 'NETWORK SPREAD' },
+    { iconType: 'scada', label: 'SCADA → PLC', title: 'SCADA COMPROMISE' },
+    { iconType: 'plc', label: 'PLC → Target', title: 'PAYLOAD DELIVERY' },
+  ], []);
   
   const current = stages[stage];
+  const IconComponent = IconComponents[current.iconType];
   
   return (
     <div className="compact-attack">
       <div className="compact-stage-badge">STAGE {stage + 1}/5</div>
-      <div className="compact-icon">{current.icon}</div>
+      <div className="compact-icon-svg">
+        {IconComponent && <IconComponent size={64} infected={true} />}
+      </div>
       <div className="compact-title">{current.title}</div>
       <div className="compact-flow">{current.label}</div>
       <div className="compact-dots">
