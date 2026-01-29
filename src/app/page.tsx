@@ -4063,6 +4063,7 @@ export default function Home() {
           onChange={(e) => switchStory(e.target.value)}
         >
           <option value="showcase">🎨 Showcase</option>
+          <option value="phishing">🎣 Phishing Attack</option>
           <option value="reverseShell">🐚 Reverse Shell</option>
           <option value="stuxnet">🦠 Stuxnet</option>
           <option value="coupang">🛒 Coupang Breach</option>
