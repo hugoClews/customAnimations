@@ -2067,7 +2067,7 @@ function PastelCode({ title, lines }: { title: string; lines?: Array<{text: stri
 }
 
 // Pastel Terminal
-function PastelTerminal({ title, lines }: { title: string; lines?: TerminalLine[] }) {
+function PastelTerminal({ title, lines }: { title: string; lines?: Array<{text: string; type: string; delay?: number}> }) {
   const [visibleLines, setVisibleLines] = useState(0);
   
   useEffect(() => {
