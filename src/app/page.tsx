@@ -416,6 +416,98 @@ const stories: Record<string, Story> = {
         subtitle: "Your biggest threat might already be inside"
       }
     ]
+  },
+  
+  showcase: {
+    id: "showcase",
+    title: "Animation Showcase",
+    subtitle: "Creative Visual Styles & Effects",
+    slides: [
+      {
+        type: "showcaseTitle",
+        title: "ANIMATION",
+        subtitle: "SHOWCASE",
+        transition: "glitch"
+      },
+      {
+        type: "particleExplosion",
+        title: "PARTICLE SYSTEMS",
+        subtitle: "Dynamic particle physics simulation",
+        transition: "scale"
+      },
+      {
+        type: "morphingShape",
+        title: "MORPHING GEOMETRY",
+        subtitle: "Smooth shape interpolation",
+        transition: "fade"
+      },
+      {
+        type: "dataVisualization",
+        title: "DATA VISUALIZATION",
+        subtitle: "Animated charts and metrics",
+        items: [
+          { value: "87%", label: "Efficiency" },
+          { value: "2.4M", label: "Requests" },
+          { value: "99.9%", label: "Uptime" },
+          { value: "12ms", label: "Latency" }
+        ],
+        transition: "slide-up"
+      },
+      {
+        type: "pulseRadar",
+        title: "PULSE RADAR",
+        subtitle: "Scanning the network perimeter",
+        transition: "scale"
+      },
+      {
+        type: "circuitBoard",
+        title: "CIRCUIT FLOW",
+        subtitle: "Electronic signal propagation",
+        transition: "wipe"
+      },
+      {
+        type: "typewriter",
+        title: "TYPEWRITER",
+        content: "The quick brown fox jumps over the lazy dog. In a world of digital chaos, clarity emerges from the noise.",
+        transition: "fade"
+      },
+      {
+        type: "orbitalSystem",
+        title: "ORBITAL SYSTEM",
+        subtitle: "Interconnected node constellation",
+        transition: "scale"
+      },
+      {
+        type: "waveform",
+        title: "AUDIO WAVEFORM",
+        subtitle: "Sound visualization in motion",
+        transition: "slide-right"
+      },
+      {
+        type: "hexGrid",
+        title: "HEX GRID",
+        subtitle: "Honeycomb pattern activation",
+        transition: "fade"
+      },
+      {
+        type: "glitchArt",
+        title: "GLITCH_ART",
+        subtitle: "Digital distortion aesthetics",
+        transition: "glitch"
+      },
+      {
+        type: "dnaHelix",
+        title: "DNA HELIX",
+        subtitle: "Double helix rotation",
+        transition: "scale"
+      },
+      {
+        type: "showcaseTitle",
+        title: "END OF",
+        subtitle: "SHOWCASE",
+        transition: "glitch"
+      }
+    ]
   }
 };
 
@@ -1421,6 +1513,888 @@ function ReverseShellStages({ stage }: { stage: number }) {
   );
 }
 
+// ===========================================
+// SHOWCASE ANIMATION COMPONENTS
+// ===========================================
+
+// Showcase Title with animated gradient
+function ShowcaseTitle({ title, subtitle }: { title: string; subtitle: string }) {
+  return (
+    <div className="showcase-title">
+      <h1 className="showcase-title-main">{title}</h1>
+      <h2 className="showcase-title-sub">{subtitle}</h2>
+      <div className="showcase-title-line" />
+    </div>
+  );
+}
+
+// Particle Explosion Effect
+function ParticleExplosion({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const particles: Array<{x: number; y: number; vx: number; vy: number; life: number; color: string; size: number}> = [];
+    const colors = ['#00f0ff', '#ff3366', '#a855f7', '#00ff41', '#ffaa00'];
+    
+    const createExplosion = (cx: number, cy: number) => {
+      for (let i = 0; i < 50; i++) {
+        const angle = (Math.PI * 2 * i) / 50 + Math.random() * 0.5;
+        const speed = 2 + Math.random() * 4;
+        particles.push({
+          x: cx, y: cy,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 1,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: 2 + Math.random() * 4
+        });
+      }
+    };
+    
+    // Initial explosion
+    createExplosion(canvas.width / 2, canvas.height / 2);
+    
+    const interval = setInterval(() => {
+      createExplosion(
+        canvas.width * 0.3 + Math.random() * canvas.width * 0.4,
+        canvas.height * 0.3 + Math.random() * canvas.height * 0.4
+      );
+    }, 2000);
+    
+    let animationId: number;
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // gravity
+        p.vx *= 0.99;
+        p.life -= 0.015;
+        
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + Math.floor(p.life * 255).toString(16).padStart(2, '0');
+        ctx.fill();
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => {
+      cancelAnimationFrame(animationId);
+      clearInterval(interval);
+    };
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Morphing Shape Animation
+function MorphingShape({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    let time = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const baseRadius = Math.min(canvas.width, canvas.height) * 0.25;
+      
+      // Draw multiple morphing layers
+      for (let layer = 3; layer >= 0; layer--) {
+        ctx.beginPath();
+        const points = 6 + layer * 2;
+        const layerOffset = layer * 0.5;
+        
+        for (let i = 0; i <= points * 10; i++) {
+          const angle = (i / (points * 10)) * Math.PI * 2;
+          const morph = Math.sin(angle * points + time * 2 + layerOffset) * 0.3 + 
+                       Math.sin(angle * (points + 1) - time * 1.5) * 0.2;
+          const r = baseRadius * (0.6 + layer * 0.15) * (1 + morph);
+          const x = cx + Math.cos(angle) * r;
+          const y = cy + Math.sin(angle) * r;
+          
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        
+        ctx.closePath();
+        const alpha = 0.15 + layer * 0.1;
+        const hue = (time * 30 + layer * 60) % 360;
+        ctx.fillStyle = `hsla(${hue}, 80%, 60%, ${alpha})`;
+        ctx.fill();
+        ctx.strokeStyle = `hsla(${hue}, 80%, 60%, ${alpha + 0.3})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      
+      time += 0.02;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Animated Data Visualization
+function DataVisualization({ title, subtitle, items }: { title: string; subtitle: string; items?: Array<{value: string; label: string}> }) {
+  const [progress, setProgress] = useState(0);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(p => (p + 1) % 100);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="showcase-slide data-viz">
+      <h2 className="showcase-heading">{title}</h2>
+      <p className="showcase-subheading">{subtitle}</p>
+      
+      <div className="data-viz-grid">
+        {items?.map((item, i) => (
+          <div key={i} className="data-viz-card" style={{ animationDelay: `${i * 0.15}s` }}>
+            <div className="data-viz-value">{item.value}</div>
+            <div className="data-viz-label">{item.label}</div>
+            <div className="data-viz-bar">
+              <div 
+                className="data-viz-bar-fill" 
+                style={{ 
+                  width: `${(Math.sin((progress + i * 25) * 0.05) * 30 + 70)}%`,
+                  background: `hsl(${180 + i * 40}, 80%, 50%)`
+                }} 
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Pulse Radar Animation
+function PulseRadar({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    let angle = 0;
+    const blips: Array<{x: number; y: number; age: number}> = [];
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const maxRadius = Math.min(canvas.width, canvas.height) * 0.4;
+      
+      // Draw circles
+      for (let r = 1; r <= 4; r++) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, (maxRadius * r) / 4, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      
+      // Draw cross lines
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+      ctx.beginPath();
+      ctx.moveTo(cx - maxRadius, cy);
+      ctx.lineTo(cx + maxRadius, cy);
+      ctx.moveTo(cx, cy - maxRadius);
+      ctx.lineTo(cx, cy + maxRadius);
+      ctx.stroke();
+      
+      // Draw sweep (pie slice)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, maxRadius, angle - 0.5, angle, false);
+      ctx.closePath();
+      
+      // Create gradient for sweep
+      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius);
+      gradient.addColorStop(0, 'rgba(0, 255, 65, 0.1)');
+      gradient.addColorStop(0.5, 'rgba(0, 255, 65, 0.3)');
+      gradient.addColorStop(1, 'rgba(0, 255, 65, 0.1)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Sweep line
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(angle) * maxRadius, cy + Math.sin(angle) * maxRadius);
+      ctx.strokeStyle = '#00ff41';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // Random blips
+      if (Math.random() < 0.03) {
+        const dist = Math.random() * maxRadius * 0.8 + maxRadius * 0.1;
+        const blipAngle = angle + (Math.random() - 0.5) * 0.3;
+        blips.push({
+          x: cx + Math.cos(blipAngle) * dist,
+          y: cy + Math.sin(blipAngle) * dist,
+          age: 0
+        });
+      }
+      
+      // Draw blips
+      for (let i = blips.length - 1; i >= 0; i--) {
+        const blip = blips[i];
+        blip.age += 0.02;
+        if (blip.age > 1) {
+          blips.splice(i, 1);
+          continue;
+        }
+        ctx.beginPath();
+        ctx.arc(blip.x, blip.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 255, 65, ${1 - blip.age})`;
+        ctx.fill();
+      }
+      
+      angle += 0.03;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay bottom">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Circuit Board Animation
+function CircuitBoard({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const gridSize = 30;
+    const nodes: Array<{x: number; y: number; connections: number[]}> = [];
+    const signals: Array<{from: number; to: number; progress: number; color: string}> = [];
+    
+    // Create grid nodes
+    for (let x = gridSize; x < canvas.width - gridSize; x += gridSize) {
+      for (let y = gridSize; y < canvas.height - gridSize; y += gridSize) {
+        if (Math.random() > 0.3) {
+          nodes.push({ x, y, connections: [] });
+        }
+      }
+    }
+    
+    // Create connections
+    nodes.forEach((node, i) => {
+      nodes.forEach((other, j) => {
+        if (i >= j) return;
+        const dist = Math.hypot(node.x - other.x, node.y - other.y);
+        if (dist < gridSize * 2 && Math.random() > 0.5) {
+          node.connections.push(j);
+          other.connections.push(i);
+        }
+      });
+    });
+    
+    let animationId: number;
+    const colors = ['#00f0ff', '#00ff41', '#ff3366', '#a855f7'];
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw connections
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+      ctx.lineWidth = 1;
+      nodes.forEach((node, i) => {
+        node.connections.forEach(j => {
+          if (j > i) {
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+          }
+        });
+      });
+      
+      // Draw nodes
+      nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+        ctx.fill();
+      });
+      
+      // Add new signals
+      if (Math.random() < 0.05 && nodes.length > 0) {
+        const fromIdx = Math.floor(Math.random() * nodes.length);
+        const node = nodes[fromIdx];
+        if (node.connections.length > 0) {
+          const toIdx = node.connections[Math.floor(Math.random() * node.connections.length)];
+          signals.push({
+            from: fromIdx, to: toIdx, progress: 0,
+            color: colors[Math.floor(Math.random() * colors.length)]
+          });
+        }
+      }
+      
+      // Draw and update signals
+      for (let i = signals.length - 1; i >= 0; i--) {
+        const sig = signals[i];
+        sig.progress += 0.03;
+        
+        if (sig.progress >= 1) {
+          // Continue to next node
+          const node = nodes[sig.to];
+          if (node.connections.length > 0 && Math.random() > 0.3) {
+            const nextIdx = node.connections[Math.floor(Math.random() * node.connections.length)];
+            sig.from = sig.to;
+            sig.to = nextIdx;
+            sig.progress = 0;
+          } else {
+            signals.splice(i, 1);
+            continue;
+          }
+        }
+        
+        const fromNode = nodes[sig.from];
+        const toNode = nodes[sig.to];
+        const x = fromNode.x + (toNode.x - fromNode.x) * sig.progress;
+        const y = fromNode.y + (toNode.y - fromNode.y) * sig.progress;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.fillStyle = sig.color;
+        ctx.shadowColor = sig.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Typewriter Effect
+function TypewriterEffect({ title, content }: { title: string; content?: string }) {
+  const [text, setText] = useState('');
+  const [cursorVisible, setCursorVisible] = useState(true);
+  
+  useEffect(() => {
+    if (!content) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < content.length) {
+        setText(content.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 50);
+    
+    const cursorInterval = setInterval(() => {
+      setCursorVisible(v => !v);
+    }, 500);
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(cursorInterval);
+    };
+  }, [content]);
+  
+  return (
+    <div className="showcase-slide typewriter">
+      <h2 className="showcase-heading">{title}</h2>
+      <div className="typewriter-container">
+        <p className="typewriter-text">
+          {text}
+          <span className={`typewriter-cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Orbital System Animation
+function OrbitalSystem({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    
+    const orbits = [
+      { radius: 60, speed: 0.02, nodes: 3, color: '#00f0ff' },
+      { radius: 100, speed: -0.015, nodes: 5, color: '#ff3366' },
+      { radius: 150, speed: 0.01, nodes: 8, color: '#a855f7' },
+      { radius: 200, speed: -0.008, nodes: 12, color: '#00ff41' },
+    ];
+    
+    let time = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Central node
+      ctx.beginPath();
+      ctx.arc(cx, cy, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      
+      // Draw orbits and nodes
+      orbits.forEach(orbit => {
+        // Orbit ring
+        ctx.beginPath();
+        ctx.arc(cx, cy, orbit.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = orbit.color + '30';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // Nodes on orbit
+        for (let i = 0; i < orbit.nodes; i++) {
+          const angle = (i / orbit.nodes) * Math.PI * 2 + time * orbit.speed;
+          const x = cx + Math.cos(angle) * orbit.radius;
+          const y = cy + Math.sin(angle) * orbit.radius;
+          
+          ctx.beginPath();
+          ctx.arc(x, y, 6, 0, Math.PI * 2);
+          ctx.fillStyle = orbit.color;
+          ctx.shadowColor = orbit.color;
+          ctx.shadowBlur = 10;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          
+          // Connection to center
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(x, y);
+          ctx.strokeStyle = orbit.color + '20';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      });
+      
+      time += 1;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay bottom">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Waveform Animation
+function WaveformAnimation({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    let time = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const cy = canvas.height / 2;
+      const waves = [
+        { amplitude: 40, frequency: 0.02, speed: 0.05, color: '#00f0ff' },
+        { amplitude: 30, frequency: 0.03, speed: -0.03, color: '#ff3366' },
+        { amplitude: 50, frequency: 0.015, speed: 0.04, color: '#a855f7' },
+      ];
+      
+      waves.forEach(wave => {
+        ctx.beginPath();
+        for (let x = 0; x < canvas.width; x++) {
+          const y = cy + Math.sin(x * wave.frequency + time * wave.speed) * wave.amplitude * 
+                   (0.5 + 0.5 * Math.sin(x * 0.005 + time * 0.02));
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = wave.color;
+        ctx.lineWidth = 3;
+        ctx.shadowColor = wave.color;
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      });
+      
+      // Frequency bars
+      const barCount = 32;
+      const barWidth = canvas.width / barCount - 2;
+      for (let i = 0; i < barCount; i++) {
+        const height = Math.abs(Math.sin(i * 0.3 + time * 0.1)) * 60 + 10;
+        const hue = (i / barCount) * 180 + 180;
+        ctx.fillStyle = `hsla(${hue}, 80%, 50%, 0.5)`;
+        ctx.fillRect(i * (barWidth + 2), canvas.height - height - 20, barWidth, height);
+      }
+      
+      time += 1;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Hex Grid Animation
+function HexGrid({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    const hexSize = 25;
+    const hexHeight = hexSize * Math.sqrt(3);
+    const hexes: Array<{x: number; y: number; active: number}> = [];
+    
+    for (let row = 0; row < canvas.height / hexHeight + 1; row++) {
+      for (let col = 0; col < canvas.width / (hexSize * 1.5) + 1; col++) {
+        const x = col * hexSize * 1.5;
+        const y = row * hexHeight + (col % 2) * hexHeight / 2;
+        hexes.push({ x, y, active: 0 });
+      }
+    }
+    
+    let time = 0;
+    let animationId: number;
+    
+    const drawHex = (x: number, y: number, size: number, active: number) => {
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (i * 60 - 30) * Math.PI / 180;
+        const hx = x + size * Math.cos(angle);
+        const hy = y + size * Math.sin(angle);
+        if (i === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      
+      if (active > 0) {
+        const hue = 180 + active * 60;
+        ctx.fillStyle = `hsla(${hue}, 80%, 50%, ${active * 0.5})`;
+        ctx.fill();
+      }
+      ctx.strokeStyle = `rgba(0, 240, 255, ${0.2 + active * 0.3})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+    
+    const animate = () => {
+      ctx.fillStyle = '#0a0a0f';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Activate random hexes
+      if (Math.random() < 0.1) {
+        const idx = Math.floor(Math.random() * hexes.length);
+        hexes[idx].active = 1;
+      }
+      
+      hexes.forEach(hex => {
+        if (hex.active > 0) hex.active -= 0.02;
+        drawHex(hex.x, hex.y, hexSize, Math.max(0, hex.active));
+      });
+      
+      time += 1;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
+// Glitch Art Effect
+function GlitchArt({ title, subtitle }: { title: string; subtitle: string }) {
+  const [glitchOffset, setGlitchOffset] = useState({ x: 0, y: 0 });
+  const [slices, setSlices] = useState<Array<{top: number; height: number; offset: number}>>([]);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() < 0.3) {
+        setGlitchOffset({
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10
+        });
+        
+        const newSlices = [];
+        for (let i = 0; i < 5; i++) {
+          newSlices.push({
+            top: Math.random() * 100,
+            height: Math.random() * 10 + 2,
+            offset: (Math.random() - 0.5) * 30
+          });
+        }
+        setSlices(newSlices);
+        
+        setTimeout(() => {
+          setGlitchOffset({ x: 0, y: 0 });
+          setSlices([]);
+        }, 100);
+      }
+    }, 200);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="showcase-slide glitch-art">
+      <div className="glitch-container">
+        <h2 
+          className="glitch-text" 
+          style={{ transform: `translate(${glitchOffset.x}px, ${glitchOffset.y}px)` }}
+          data-text={title}
+        >
+          {title}
+        </h2>
+        <p className="showcase-subheading">{subtitle}</p>
+        
+        {slices.map((slice, i) => (
+          <div
+            key={i}
+            className="glitch-slice"
+            style={{
+              top: `${slice.top}%`,
+              height: `${slice.height}%`,
+              transform: `translateX(${slice.offset}px)`
+            }}
+          />
+        ))}
+      </div>
+      
+      <div className="scanlines-overlay" />
+    </div>
+  );
+}
+
+// DNA Helix Animation
+function DNAHelix({ title, subtitle }: { title: string; subtitle: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    let time = 0;
+    let animationId: number;
+    
+    const animate = () => {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.15)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      const cx = canvas.width / 2;
+      const amplitude = 80;
+      const verticalSpacing = 20;
+      
+      for (let y = 0; y < canvas.height + verticalSpacing; y += verticalSpacing) {
+        const phase = y * 0.05 + time * 0.05;
+        
+        // Left strand
+        const x1 = cx + Math.sin(phase) * amplitude;
+        const z1 = Math.cos(phase);
+        
+        // Right strand
+        const x2 = cx + Math.sin(phase + Math.PI) * amplitude;
+        const z2 = Math.cos(phase + Math.PI);
+        
+        // Draw connection bar
+        if (z1 > 0) {
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${0.3 + z1 * 0.3})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+        
+        // Draw nodes
+        const size1 = 4 + z1 * 3;
+        const size2 = 4 + z2 * 3;
+        
+        ctx.beginPath();
+        ctx.arc(x1, y, Math.max(1, size1), 0, Math.PI * 2);
+        ctx.fillStyle = z1 > 0 ? '#00f0ff' : '#ff3366';
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = z1 > 0 ? 15 : 5;
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(x2, y, Math.max(1, size2), 0, Math.PI * 2);
+        ctx.fillStyle = z2 > 0 ? '#ff3366' : '#00f0ff';
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = z2 > 0 ? 15 : 5;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      time += 1;
+      animationId = requestAnimationFrame(animate);
+    };
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+  
+  return (
+    <div className="showcase-slide">
+      <canvas ref={canvasRef} className="showcase-canvas" />
+      <div className="showcase-overlay bottom">
+        <h2 className="showcase-heading">{title}</h2>
+        <p className="showcase-subheading">{subtitle}</p>
+      </div>
+    </div>
+  );
+}
+
 // Particle Network Background Component
 function ParticleNetwork() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1804,6 +2778,93 @@ export default function Home() {
           </div>
         );
 
+      // ===========================================
+      // SHOWCASE ANIMATION CASES
+      // ===========================================
+      case "showcaseTitle":
+        return (
+          <div className={`slide-content showcase-slide ${transitionClass}`} key={animationKey}>
+            <ShowcaseTitle title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "particleExplosion":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <ParticleExplosion title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "morphingShape":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <MorphingShape title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "dataVisualization":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <DataVisualization title={slide.title || ""} subtitle={slide.subtitle || ""} items={slide.items} />
+          </div>
+        );
+
+      case "pulseRadar":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <PulseRadar title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "circuitBoard":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <CircuitBoard title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "typewriter":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <TypewriterEffect title={slide.title || ""} content={slide.content} />
+          </div>
+        );
+
+      case "orbitalSystem":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <OrbitalSystem title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "waveform":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <WaveformAnimation title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "hexGrid":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <HexGrid title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "glitchArt":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <GlitchArt title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
+      case "dnaHelix":
+        return (
+          <div className={`slide-content ${transitionClass}`} key={animationKey}>
+            <DNAHelix title={slide.title || ""} subtitle={slide.subtitle || ""} />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -1817,6 +2878,7 @@ export default function Home() {
           value={currentStory} 
           onChange={(e) => switchStory(e.target.value)}
         >
+          <option value="showcase">🎨 Showcase</option>
           <option value="reverseShell">🐚 Reverse Shell</option>
           <option value="stuxnet">🦠 Stuxnet</option>
           <option value="coupang">🛒 Coupang Breach</option>

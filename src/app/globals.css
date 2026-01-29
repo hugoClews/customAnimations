@@ -2911,3 +2911,269 @@ body {
   fill: #ff3366;
   filter: drop-shadow(0 0 8px #ff3366);
 }
+
+/* ===========================================
+   SHOWCASE ANIMATION STYLES
+   =========================================== */
+
+/* Showcase Slide Container */
+.showcase-slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.showcase-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.showcase-overlay {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: clamp(16px, 3vmin, 32px);
+}
+
+.showcase-overlay.bottom {
+  position: absolute;
+  bottom: clamp(20px, 4vmin, 40px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.showcase-heading {
+  font-size: clamp(24px, 5vmin, 42px);
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: clamp(2px, 0.4vmin, 5px);
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+  margin-bottom: clamp(8px, 1.5vmin, 16px);
+}
+
+.showcase-subheading {
+  font-size: clamp(12px, 2.2vmin, 18px);
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+/* Showcase Title */
+.showcase-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 2vmin, 20px);
+}
+
+.showcase-title-main {
+  font-size: clamp(48px, 12vmin, 100px);
+  font-weight: 900;
+  background: linear-gradient(135deg, #00f0ff 0%, #ff3366 50%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: clamp(4px, 1vmin, 12px);
+  animation: showcaseTitleGlow 3s ease-in-out infinite;
+}
+
+.showcase-title-sub {
+  font-size: clamp(24px, 6vmin, 50px);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: clamp(8px, 2vmin, 20px);
+}
+
+.showcase-title-line {
+  width: clamp(100px, 30vmin, 300px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+  animation: lineExpand 2s ease-in-out infinite;
+}
+
+@keyframes showcaseTitleGlow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.5)); }
+  50% { filter: drop-shadow(0 0 40px rgba(255, 51, 102, 0.5)); }
+}
+
+@keyframes lineExpand {
+  0%, 100% { transform: scaleX(0.5); opacity: 0.5; }
+  50% { transform: scaleX(1); opacity: 1; }
+}
+
+/* Data Visualization */
+.data-viz {
+  padding: clamp(20px, 4vmin, 40px);
+}
+
+.data-viz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px, 3vmin, 32px);
+  margin-top: clamp(24px, 5vmin, 48px);
+  max-width: clamp(300px, 70vmin, 600px);
+}
+
+.data-viz-card {
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: clamp(12px, 2vmin, 20px);
+  padding: clamp(16px, 3vmin, 28px);
+  text-align: center;
+  animation: cardFadeIn 0.5s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes cardFadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.data-viz-value {
+  font-size: clamp(28px, 6vmin, 48px);
+  font-weight: 800;
+  color: #00f0ff;
+  font-family: 'Fira Code', monospace;
+}
+
+.data-viz-label {
+  font-size: clamp(10px, 1.8vmin, 14px);
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: clamp(8px, 1.5vmin, 12px) 0;
+}
+
+.data-viz-bar {
+  height: clamp(4px, 0.8vmin, 8px);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.data-viz-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Typewriter */
+.typewriter {
+  padding: clamp(24px, 5vmin, 48px);
+}
+
+.typewriter-container {
+  max-width: clamp(280px, 70vmin, 600px);
+  margin-top: clamp(24px, 5vmin, 48px);
+  padding: clamp(20px, 4vmin, 40px);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: clamp(8px, 1.5vmin, 16px);
+}
+
+.typewriter-text {
+  font-family: 'Fira Code', monospace;
+  font-size: clamp(14px, 2.5vmin, 20px);
+  color: #00f0ff;
+  line-height: 1.8;
+  text-align: left;
+}
+
+.typewriter-cursor {
+  opacity: 0;
+  color: #00ff41;
+  font-weight: bold;
+}
+
+.typewriter-cursor.visible {
+  opacity: 1;
+}
+
+/* Glitch Art */
+.glitch-art {
+  background: #0a0a0f;
+}
+
+.glitch-container {
+  position: relative;
+  text-align: center;
+}
+
+.glitch-text {
+  font-size: clamp(36px, 10vmin, 80px);
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: clamp(4px, 1vmin, 10px);
+  position: relative;
+  display: inline-block;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  color: #ff3366;
+  animation: glitch1 0.3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+}
+
+.glitch-text::after {
+  color: #00f0ff;
+  animation: glitch2 0.3s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+}
+
+@keyframes glitch1 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(3px, -3px); }
+  60% { transform: translate(-3px, -3px); }
+  80% { transform: translate(3px, 3px); }
+}
+
+@keyframes glitch2 {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(3px, -3px); }
+  40% { transform: translate(-3px, 3px); }
+  60% { transform: translate(3px, 3px); }
+  80% { transform: translate(-3px, -3px); }
+}
+
+.glitch-slice {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: rgba(255, 51, 102, 0.1);
+  pointer-events: none;
+}
+
+.scanlines-overlay {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
